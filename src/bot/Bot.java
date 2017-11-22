@@ -31,19 +31,24 @@ public class Bot extends TelegramLongPollingBot {
 			try {
 				String[] partesNumericas = arg0.getMessage().getText().split("d");
 				numDados = Integer.parseInt(partesNumericas[0].substring(1));
-				numCaras = Integer.parseInt(partesNumericas[1]);
-				System.out.println(numDados + " dado/s de: " + numCaras + " caras");
-				ArrayList<Integer> dados = new ArrayList<Integer>();
+				if(numDados <= 0) {
+					sendMessage.setText("No puedo tirar 0 dados");
+				} else {
+					numCaras = Integer.parseInt(partesNumericas[1]);
+					System.out.println(numDados + " dado/s de: " + numCaras + " caras");
+					ArrayList<Integer> dados = new ArrayList<Integer>();
 
-				// calcula el valor
-				for (int i = 0; i < numDados; i++) {
-					int valor = (int) (Math.random() * numCaras + 1);
-					dados.add(valor);
+					// calcula el valor
+					for (int i = 0; i < numDados; i++) {
+						int valor = (int) (Math.random() * numCaras + 1);
+						dados.add(valor);
+					}
+					// ordena los dados de menor a mayor
+					Collections.sort(dados);
+					// prepara el mensaje de respuesta
+					sendMessage.setText("[" + numDados + "d" + numCaras + "]->" + dados);
 				}
-				// ordena los dados de menor a mayor
-				Collections.sort(dados);
-				// prepara el mensaje de respuesta
-				sendMessage.setText("[" + numDados + "d" + numCaras + "]->" + dados);
+
 
 			} catch (Exception e) {
 				// en caso contrario responde con un mensaje, ayudando a usar el bot
