@@ -26,16 +26,18 @@ public class Bot extends TelegramLongPollingBot {
 		// si el mensaje es un comando asume que va a ser una tirada con formato: /1d20
 		if (arg0.getMessage().getText().startsWith("/")) {
 			int numDados = 0;
-			int numCaras = 0;
+			int numCaras = 2;
 			int sumaTotal = 0;
 			// separa las partes numéricas
 			try {
 				String[] partesNumericas = arg0.getMessage().getText().split("d");
 				numDados = Integer.parseInt(partesNumericas[0].substring(1));
-				if ((numDados <= 0) || (numDados >= 50)) {
+				numCaras = Integer.parseInt(partesNumericas[1]);
+				if ((numDados <= 0) || (numDados > 50)) {
 					sendMessage.setText("No puedo tirar esa cantidad de dados. Máximo 50 dados");
+				} else if (numCaras <= 1) {
+					sendMessage.setText("¿Que dado conoces con una sola cara?");
 				} else {
-					numCaras = Integer.parseInt(partesNumericas[1]);
 					System.out.println(numDados + " dado/s de: " + numCaras + " caras");
 					ArrayList<Integer> dados = new ArrayList<Integer>();
 
@@ -43,11 +45,11 @@ public class Bot extends TelegramLongPollingBot {
 					for (int i = 0; i < numDados; i++) {
 						int valor = (int) (Math.random() * numCaras + 1);
 						dados.add(valor);
-						sumaTotal+=valor;
+						sumaTotal += valor;
 					}
 					// ordena los dados de menor a mayor
 					Collections.sort(dados);
-					
+
 					// prepara el mensaje de respuesta
 					sendMessage.setText("[" + numDados + "d" + numCaras + "]->" + dados + " = " + sumaTotal);
 				}
