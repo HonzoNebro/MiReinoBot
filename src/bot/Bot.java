@@ -21,24 +21,41 @@ public class Bot extends TelegramLongPollingBot {
 		SendMessage sendMessage = new SendMessage().setChatId(arg0.getMessage().getChatId());
 
 		// imprimir por consola el mensaje recibido
-		System.out.println(arg0.getMessage().getFrom().getFirstName() + ": " + arg0.getMessage().getText());
+		System.out.println("\n"+arg0.getMessage().getFrom().getFirstName() + ": " + arg0.getMessage().getText());
 
 		// si el mensaje es un comando asume que va a ser una tirada con formato: /1d20
 		if (arg0.getMessage().getText().startsWith("/")) {
+			String mensaje = arg0.getMessage().getText().substring(1);
+			//prueba de expresión regular
+			/*if(mensaje.matches("\\d++[d]\\d++([+-]\\d++)*")) {
+				System.out.println("es una tirada!!");
+			}*/
+			
 			int numDados = 0;
 			int numCaras = 2;
+			int valorBonificador = 0;
 			int sumaTotal = 0;
 			// separa las partes numéricas
 			try {
 				String[] partesNumericas = arg0.getMessage().getText().split("d");
 				numDados = Integer.parseInt(partesNumericas[0].substring(1));
 				numCaras = Integer.parseInt(partesNumericas[1]);
+				
+				if(mensaje.contains("+")){
+					valorBonificador = Integer.parseInt(mensaje.substring(mensaje.indexOf("+")));
+					System.out.println("bonificador: "+valorBonificador);
+				}else if (mensaje.contains("-") ){
+					valorBonificador = Integer.parseInt(mensaje.substring(mensaje.indexOf("-")));
+					System.out.println("bonificador: "+valorBonificador);
+				}
+				System.out.println("Sin bonificador que mostrar");
+				
 				if ((numDados <= 0) || (numDados > 50)) {
 					sendMessage.setText("No puedo tirar esa cantidad de dados. Máximo 50 dados");
 				} else if (numCaras <= 1) {
 					sendMessage.setText("¿Que dado conoces con una sola cara?");
 				} else {
-					System.out.println(numDados + " dado/s de: " + numCaras + " caras");
+					//System.out.println(numDados + " dado/s de: " + numCaras + " caras");
 					ArrayList<Integer> dados = new ArrayList<Integer>();
 
 					// calcula el valor
@@ -67,7 +84,7 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		try {
-			System.out.println("Respuesta del bot: " + sendMessage.getText());
+			//System.out.println("Respuesta del bot: " + sendMessage.getText());
 			sendMessage(sendMessage);
 		} catch (Exception e) {
 			e.printStackTrace();
