@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="D:/EclipseWorkspace/MiReinoBot/telegrambots-2.4.4.5-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="D:/EWorkspace/MiReinoBot/telegrambots-2.4.4.5-jar-with-dependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
