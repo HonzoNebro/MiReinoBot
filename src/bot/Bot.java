@@ -11,7 +11,7 @@ public class Bot extends TelegramLongPollingBot {
 
 	@Override
 	public String getBotUsername() {
-		return NULL;
+		return "Joderconelbot";
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class Bot extends TelegramLongPollingBot {
 	@Override
 	public String getBotToken() {
 		// TODO Auto-generated method stub
-		return NULL;
+		return 491553940:AAG8_u2AeeHOMQExf7RRgAsQnnkKNSjL9OY;
 	}
 
 	public void discernirComando(String comando) {
