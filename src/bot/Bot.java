@@ -16,7 +16,7 @@ public class Bot extends TelegramLongPollingBot {
 	@Override
 	public String getBotUsername() {
 		// SUSTITUIR POR EL ALIAS DE TU BOT
-		return "MiReinoPorUnMasterbot";
+		return "Joderconelbot";
 	}
 
 	@Override
@@ -55,8 +55,8 @@ public class Bot extends TelegramLongPollingBot {
 
 	@Override
 	public String getBotToken() {
-		// SUSTITUIR POR EL TOKEN DE TU BOT
-		return "504332506:AAHGd-2X3jjNLZsd6rpkbPlnxt6dky_AqXc";
+		//CAMBIAR
+		return "491553940:AAG8_u2AeeHOMQExf7RRgAsQnnkKNSjL9OY";
 	}
 
 	public void findCommand(String command) {
