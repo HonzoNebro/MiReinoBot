@@ -48,7 +48,6 @@ public class Bot extends TelegramLongPollingBot {
 			System.out.println("RESPUESTA: " + sendMessage.getText());
 			sendMessage(sendMessage);
 		} catch (TelegramApiException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
