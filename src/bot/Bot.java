@@ -222,28 +222,22 @@ public class Bot extends TelegramLongPollingBot {
 			dice.add(valor);
 			rollResult += valor;
 			Collections.sort(dice);
-			sendMessage.setText("[d" + numberOfSides + "]->" + dice + " = " + rollResult);
+			sendMessage.setText("[d" + numberOfSides + "]->" + dice + " = *" + rollResult + "*");
+			sendMessage.setParseMode("Markdown");
 		}
 		answerUser();
 	}
 
 	private void simpleRollWithModifier(String command) {
 		// d5+5
-		String stringAsset = command.substring(1);
-		// 5+5
-		String[] numericParts = null;
-		char modifier = 0;
-		if (stringAsset.contains("+")) {
-			numericParts = stringAsset.split("\\+");
-			modifier = '+';
-		} else if (stringAsset.contains("-")) {
-			numericParts = stringAsset.split("\\-");
+		String[] numericParts = command.split("\\D+");
+		char modifier = '+';
+		if (command.contains("-")) {
 			modifier = '-';
 		}
-		numberOfSides = Integer.parseInt(numericParts[0]);
-		rollModifier = Integer.parseInt(numericParts[1]);
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		rollModifier = Integer.parseInt(numericParts[2]);
 		rollResult = 0;
-
 		if (numberOfSides <= 1) {
 			sendMessage.setText("¿Que dado conoces con una sola cara?");
 		} else {
@@ -254,15 +248,13 @@ public class Bot extends TelegramLongPollingBot {
 			Collections.sort(dice);
 			if (modifier == '+') {
 				sendMessage.setText("[d" + numberOfSides + "" + modifier + rollModifier + "]->" + dice + "+"
-						+ rollModifier + " = " + (rollResult + rollModifier));
-			} else if (modifier == '-') {
+						+ rollModifier + " = *" + (rollResult + rollModifier) + "*");
+			} else {
 				sendMessage.setText("[d" + numberOfSides + "" + modifier + rollModifier + "]->" + dice + "-"
-						+ rollModifier + " = " + (rollResult - rollModifier));
+						+ rollModifier + " = *" + (rollResult - rollModifier) + "*");
 			}
-
-			// sendMessage.setText("[d" + numberOfSides + "]->" + dice + " = " +
-			// rollResult);
 		}
+		sendMessage.setParseMode("Markdown");
 		answerUser();
 	}
 
@@ -284,8 +276,9 @@ public class Bot extends TelegramLongPollingBot {
 				rollResult += valor;
 			}
 			Collections.sort(dice);
-			sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "]->" + dice + " = " + rollResult);
+			sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "]->" + dice + " = *" + rollResult + "*");
 		}
+		sendMessage.setParseMode("Markdown");
 		answerUser();
 	}
 
@@ -323,12 +316,13 @@ public class Bot extends TelegramLongPollingBot {
 			Collections.sort(dice);
 			if (modifier == '+') {
 				sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]->"
-						+ dice + "+" + rollModifier + " = " + (rollResult + rollModifier));
+						+ dice + "+" + rollModifier + " = *" + (rollResult + rollModifier) + "*");
 			} else if (modifier == '-') {
 				sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]->"
-						+ dice + "-" + rollModifier + " = " + (rollResult - rollModifier));
+						+ dice + "-" + rollModifier + " = *" + (rollResult - rollModifier) + "*");
 			}
 		}
+		sendMessage.setParseMode("Markdown");
 		answerUser();
 	}
 
@@ -356,8 +350,8 @@ public class Bot extends TelegramLongPollingBot {
 			} else if (diceToKeep <= 0) {
 				sendMessage.setText("No puedes quedarte con ningún dado");
 			} else if (diceToKeep == numberOfDice) {
-				sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]->" + dice + " = "
-						+ rollResult);
+				sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]->" + dice + " = *"
+						+ rollResult + "*");
 			} else {
 				rollResult = 0;
 				List<Integer> diceThrown = new ArrayList<Integer>(dice.subList(0, dice.size() - diceToKeep));
@@ -366,10 +360,11 @@ public class Bot extends TelegramLongPollingBot {
 					rollResult += value;
 				}
 				sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]->_" + diceThrown
-						+ "_ [" + diceKept + "] = " + rollResult);
-				sendMessage.setParseMode("Markdown");
+						+ "_ [" + diceKept + "] = *" + rollResult + "*");
+
 			}
 		}
+		sendMessage.setParseMode("Markdown");
 		answerUser();
 	}
 
@@ -404,10 +399,10 @@ public class Bot extends TelegramLongPollingBot {
 			} else if (diceToKeep == numberOfDice) {
 				if (modifier == '+') {
 					sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "+" + rollModifier
-							+ "]->" + dice + " + " + rollModifier + " = " + (rollResult + rollModifier));
+							+ "]->" + dice + " + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
 				} else {
 					sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "-" + rollModifier
-							+ "]->" + dice + " - " + rollModifier + " = " + (rollResult - rollModifier));
+							+ "]->" + dice + " - " + rollModifier + " = *" + (rollResult - rollModifier) + "*");
 				}
 			} else {
 				rollResult = 0;
@@ -418,18 +413,19 @@ public class Bot extends TelegramLongPollingBot {
 				}
 				if (modifier == '+') {
 					sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "+" + rollModifier
-							+ "]->_" + diceThrown + "_ [" + diceKept + "] + " + rollModifier + " = "
-							+ (rollResult + rollModifier));
+							+ "]->_" + diceThrown + "_ [" + diceKept + "] + " + rollModifier + " = *"
+							+ (rollResult + rollModifier) + "*");
 				} else {
 					sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "-" + rollModifier
-							+ "]->_" + diceThrown + "_ [" + diceKept + "] - " + rollModifier + " = "
-							+ (rollResult - rollModifier));
+							+ "]->_" + diceThrown + "_ [" + diceKept + "] - " + rollModifier + " = *"
+							+ (rollResult - rollModifier) + "*");
 				}
 				// sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" +
 				// diceToKeep + "]->_" + diceThrown + "_ [" + diceKept + "] = " + rollResult);
-				sendMessage.setParseMode("Markdown");
+
 			}
 		}
+		sendMessage.setParseMode("Markdown");
 		answerUser();
 
 	}
