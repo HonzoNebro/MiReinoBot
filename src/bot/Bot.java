@@ -56,7 +56,7 @@ public class Bot extends TelegramLongPollingBot {
 	@Override
 	public String getBotToken() {
 		// SUSTITUIR POR EL TOKEN DE TU BOT
-		return "NULL";
+		return "491553940:AAG8_u2AeeHOMQExf7RRgAsQnnkKNSjL9OY";
 	}
 
 	private void findCommand(String command) {
@@ -66,38 +66,59 @@ public class Bot extends TelegramLongPollingBot {
 		if (command.matches("[d]\\d+")) {
 			// d6
 			// es una tirada de un solo dado
-			simpleRoll(command);
+			simpleRoll(command.toLowerCase());
 		} else if (command.matches("[d]\\d+[!]")) {
 			// d6!
 			// es una tirada de un solo dado explosivo
-			explosiveRoll(command);
+			explosiveRoll(command.toLowerCase());
 		} else if (command.matches("[d]\\d+[+-]\\d+")) {
 			// d5+6 d3-21
 			// es una tirada de un dado con modificador
-			simpleRollWithModifier(command);
+			simpleRollWithModifier(command.toLowerCase());
 		} else if (command.matches("[d]\\d+[!][+-]\\d+")) {
 			// d5!+6 d3!+21
 			// es una tirada de un dado explosivo con modificador
-			simpleExplosiveRollWithModifier(command);
+			simpleExplosiveRollWithModifier(command.toLowerCase());
 		}
 
 		// Varios dados
 		else if (command.matches("\\d+[d]\\d+")) {
 			// 2d6
 			// es una tirada de varios dados
-			severalDice(command);
+			severalDice(command.toLowerCase());
 		} else if (command.matches("\\d+[d]\\d+[!]")) {
 			// 2d6!
 			// es una tirada de varios dados explosivos
-			severalExplosiveDice(command);
+			severalExplosiveDice(command.toLowerCase());
 		} else if (command.matches("\\d+[d]\\d+[+-]\\d+")) {
 			// 3d5+6 10d3-21
 			// es una tirada de varios dados con modificador
-			severalDiceWithModifier(command);
+			severalDiceWithModifier(command.toLowerCase());
 		} else if (command.matches("\\d+[d]\\d+[!][+-]\\d+")) {
 			// 3d5!+6 10d3!-21
 			// es una tirada de varios dados explosivos con modificador
-			severalExplosiveDiceWithModifier(command);
+			severalExplosiveDiceWithModifier(command.toLowerCase());
+		}
+
+		// Tirada de varios dados, donde guardamos los dados más altos
+		else if (command.matches("\\d+[d]\\d+(h|kh|l|kl)\\d+")) {
+			// 3d5h1 3d5kh1 3d5Kh1 3d5KH1 3d5kH1 3d5kH1
+			// es una tirada, de 3d5 donde guardamos dados
+			severalKeepRoll(command.toLowerCase());
+		} else if (command.matches("\\d+[d]\\d+[!](h|kh|l|kl)\\d+")) {
+			// 3d5!h1
+			// es una tirada, de 3d5 explosivos donde guardamos dados
+			severalExplosiveKeepRoll(command.toLowerCase());
+		} else if (command.matches("\\d+[d]\\d+(h|kh|l|kl)\\d+[+-]\\d+")) {
+			// 3d5l1+5
+			// es una tirada, de 3d5 donde guardamos dados y
+			// aplicamos el modificador
+			severalKeepRollWithModifier(command.toLowerCase());
+		} else if (command.matches("\\d+[d]\\d+[!](h|kh|l|kl)\\d+[+-]\\d+")) {
+			// 3d5!l1+5
+			// es una tirada, de 3d5 explosivos donde guardamos dados y
+			// aplicamos el modificador
+			severalExplosiveKeepRollWithModifier(command.toLowerCase());
 		}
 
 		// Tirada múltiple de un solo dado
@@ -134,40 +155,19 @@ public class Bot extends TelegramLongPollingBot {
 			// donde aplicamos modificador
 		}
 
-		// Tirada de varios dados, donde guardamos dados **nECESITA REPLANTEARSE**
-		else if (command.matches("\\d+[d]\\d+(h|kh|Kh|kH|KH)\\d+")) {
-			// 3d5h1 3d5kh1 3d5Kh1 3d5KH1 3d5kH1 3d5kH1
-			// es una tirada, de 3d5 donde guardamos dados
-			severalKeepRoll(command);
-		} else if (command.matches("\\d+[d]\\d+[!](h|kh|Kh|kH|KH)\\d+")) {
-			// 3d5!h1
-			// es una tirada, de 3d5 explosivos donde guardamos dados
-			severalExplosiveKeepRoll(command);
-		} else if (command.matches("\\d+[d]\\d+(h|kh|Kh|kH|KH)\\d+[+-]\\d+")) {
-			// 3d5l1+5
-			// es una tirada, de 3d5 donde guardamos dados y
-			// aplicamos el modificador
-			severalKeepRollWithModifier(command);
-		} else if (command.matches("\\d+[d]\\d+[!](h|kh|Kh|kH|KH)\\d+[+-]\\d+")) {
-			// 3d5!l1+5
-			// es una tirada, de 3d5 explosivos donde guardamos dados y
-			// aplicamos el modificador
-			severalExplosiveKeepRollWithModifier(command);
-		}
-
 		// Tirada multiple de varios dados donde guardamos dados **NECESITA
 		// REPLANTEARSE**
-		else if (command.matches("\\d+[x]\\d+[d]\\d+[hlHL]\\d+")) {
+		else if (command.matches("\\d+[x]\\d+[d]\\d+(h|kh|l|kl)\\d+")) {
 			// 6x4d6h3
 			// es una tirada multiple, de 4d6 donde nos quedamos con el más alto
-		} else if (command.matches("\\d+[x]\\d+[d]\\d+[!][hlHL]\\d+")) {
+		} else if (command.matches("\\d+[x]\\d+[d]\\d+[!](h|kh|l|kl)\\d+")) {
 			// 6x4d6!h3
 			// es una tirada multiple, de 4d6 donde nos quedamos con el más alto
-		} else if (command.matches("\\d+[x]\\d+[d]\\d+[hlHL]\\d+[+-]\\d+")) {
+		} else if (command.matches("\\d+[x]\\d+[d]\\d+(h|kh|l|kl)\\d+[+-]\\d+")) {
 			// 6x4d6l3+5
 			// es una tirada multiple, de 4d6 donde nos quedamos con el más alto
 			// y aplicamos el modificador
-		} else if (command.matches("\\d+[x]\\d+[d]\\d+[!][hlHL]\\d+[+-]\\d+")) {
+		} else if (command.matches("\\d+[x]\\d+[d]\\d+[!](h|kh|l|kl)\\d+[+-]\\d+")) {
 			// 6x4d6!l3+5
 			// es una tirada multiple, de 4d6 donde nos quedamos con el más alto
 			// y aplicamos el modificador
@@ -491,7 +491,7 @@ public class Bot extends TelegramLongPollingBot {
 			} else if (diceToKeep == numberOfDice) {
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]*-> [" + dice
 						+ "] = *" + rollResult + "*");
-			} else {
+			} else if (command.contains("h") || command.contains("hl")) {
 				rollResult = 0;
 				List<Integer> diceThrown = new ArrayList<Integer>(dice.subList(0, dice.size() - diceToKeep));
 				List<Integer> diceKept = dice.subList(dice.size() - diceToKeep, dice.size());
@@ -500,6 +500,16 @@ public class Bot extends TelegramLongPollingBot {
 				}
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]*->_" + diceThrown
 						+ "_ [" + diceKept + "] = *" + rollResult + "*");
+			} else {
+				rollResult = 0;
+				List<Integer> diceKept = dice.subList(0, diceToKeep);
+				List<Integer> diceThrown = dice.subList(diceToKeep, dice.size());
+				
+				for (Integer value : diceKept) {
+					rollResult += value;
+				}
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "l" + diceToKeep + "]*->*" + diceKept
+						+ "*_ " + diceThrown + "_ = *" + rollResult + "*");
 			}
 		}
 		sendMessage.setParseMode("Markdown");
@@ -533,18 +543,25 @@ public class Bot extends TelegramLongPollingBot {
 				sendMessage.setText("La tirada no es de tantos dados");
 			} else if (diceToKeep <= 0) {
 				sendMessage.setText("No puedes quedarte con ningún dado");
-			} else if (diceToKeep == numberOfDice) {
-				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]*-> [" + dice
-						+ "] = *" + rollResult + "*");
-			} else {
+			}  else if (command.contains("h") || command.contains("hl")) {
 				rollResult = 0;
 				List<Integer> diceThrown = new ArrayList<Integer>(dice.subList(0, dice.size() - diceToKeep));
 				List<Integer> diceKept = dice.subList(dice.size() - diceToKeep, dice.size());
 				for (Integer value : diceKept) {
 					rollResult += value;
 				}
-				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]*->_" + diceThrown
-						+ "_ [" + diceKept + "] = *" + rollResult + "*");
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!h" + diceToKeep + "]*->_" + diceThrown
+						+ "_ *" + diceKept + "* = *" + rollResult + "*");
+			} else {
+				rollResult = 0;
+				List<Integer> diceKept = dice.subList(0, diceToKeep);
+				List<Integer> diceThrown = dice.subList(diceToKeep, dice.size());
+				
+				for (Integer value : diceKept) {
+					rollResult += value;
+				}
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!l" + diceToKeep + "]*->*" + diceKept
+						+ "*_ " + diceThrown + "_ = *" + rollResult + "*");
 			}
 		}
 		sendMessage.setParseMode("Markdown");
@@ -645,13 +662,13 @@ public class Bot extends TelegramLongPollingBot {
 				sendMessage.setText("No puedes quedarte con ningún dado");
 			} else if (diceToKeep == numberOfDice) {
 				if (modifier == '+') {
-					sendMessage.setText(
-							"*[" + numberOfDice + "d" + numberOfSides + "!h" + diceToKeep + "+" + rollModifier + "]*-> ["
-									+ dice + "] + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
+					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!h" + diceToKeep + "+"
+							+ rollModifier + "]*-> [" + dice + "] + " + rollModifier + " = *"
+							+ (rollResult + rollModifier) + "*");
 				} else {
-					sendMessage.setText(
-							"*[" + numberOfDice + "d" + numberOfSides + "!h" + diceToKeep + "-" + rollModifier + "]*-> ["
-									+ dice + "] - " + rollModifier + " = *" + (rollResult - rollModifier) + "*");
+					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!h" + diceToKeep + "-"
+							+ rollModifier + "]*-> [" + dice + "] - " + rollModifier + " = *"
+							+ (rollResult - rollModifier) + "*");
 				}
 			} else {
 				rollResult = 0;
