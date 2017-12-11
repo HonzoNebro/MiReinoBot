@@ -703,11 +703,11 @@ public class Bot extends TelegramLongPollingBot {
 					rollResult += value;
 				}
 				if (modifier == '+') {
-					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "+"
+					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!h" + diceToKeep + "+"
 							+ rollModifier + "]*-> _" + diceThrown + "_ *" + diceKept + "* +" + rollModifier + " = *"
 							+ (rollResult + rollModifier) + "*");
 				} else {
-					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "-"
+					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!h" + diceToKeep + "-"
 							+ rollModifier + "]*-> _" + diceThrown + "_ *" + diceKept + "* -" + rollModifier + " = *"
 							+ (rollResult - rollModifier) + "*");
 				}
@@ -720,11 +720,11 @@ public class Bot extends TelegramLongPollingBot {
 					rollResult += value;
 				}
 				if (modifier == '+') {
-					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "l" + diceToKeep + "+"
+					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!l" + diceToKeep + "+"
 							+ rollModifier + "]*-> *" + diceKept + "* _" + diceThrown + "_ +" + rollModifier + " = *"
 							+ (rollResult + rollModifier) + "*");
 				} else {
-					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "l" + diceToKeep + "-"
+					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!l" + diceToKeep + "-"
 							+ rollModifier + "]*-> *" + diceKept + "* _" + diceThrown + "_ -" + rollModifier + " = *"
 							+ (rollResult - rollModifier) + "*");
 				}
