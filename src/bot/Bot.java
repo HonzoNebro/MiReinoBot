@@ -59,7 +59,7 @@ public class Bot extends TelegramLongPollingBot {
 		return "NULL";
 	}
 
-	public void findCommand(String command) {
+	private void findCommand(String command) {
 		// Comandos admitidos
 
 		// Dado único
@@ -70,6 +70,7 @@ public class Bot extends TelegramLongPollingBot {
 		} else if (command.matches("[d]\\d+[!]")) {
 			// d6!
 			// es una tirada de un solo dado explosivo
+			explosiveRoll(command);
 		} else if (command.matches("[d]\\d+[+-]\\d+")) {
 			// d5+6 d3-21
 			// es una tirada de un dado con modificador
@@ -77,6 +78,7 @@ public class Bot extends TelegramLongPollingBot {
 		} else if (command.matches("[d]\\d+[!][+-]\\d+")) {
 			// d5!+6 d3!+21
 			// es una tirada de un dado explosivo con modificador
+			simpleExplosiveRollWithModifier(command);
 		}
 
 		// Varios dados
@@ -87,6 +89,7 @@ public class Bot extends TelegramLongPollingBot {
 		} else if (command.matches("\\d+[d]\\d+[!]")) {
 			// 2d6!
 			// es una tirada de varios dados explosivos
+			severalExplosiveDice(command);
 		} else if (command.matches("\\d+[d]\\d+[+-]\\d+")) {
 			// 3d5+6 10d3-21
 			// es una tirada de varios dados con modificador
@@ -94,6 +97,7 @@ public class Bot extends TelegramLongPollingBot {
 		} else if (command.matches("\\d+[d]\\d+[!][+-]\\d+")) {
 			// 3d5!+6 10d3!-21
 			// es una tirada de varios dados explosivos con modificador
+			severalExplosiveDiceWithModifier(command);
 		}
 
 		// Tirada múltiple de un solo dado
@@ -131,22 +135,24 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Tirada de varios dados, donde guardamos dados **nECESITA REPLANTEARSE**
-		else if (command.matches("\\d+[d]\\d+\\B(h|kh|Kh|kH|KH)\\d+")) {
+		else if (command.matches("\\d+[d]\\d+(h|kh|Kh|kH|KH)\\d+")) {
 			// 3d5h1 3d5kh1 3d5Kh1 3d5KH1 3d5kH1 3d5kH1
 			// es una tirada, de 3d5 donde guardamos dados
 			severalKeepRoll(command);
-		} else if (command.matches("\\d+[d]\\d+[hlHL]\\d+")) {
+		} else if (command.matches("\\d+[d]\\d+[!](h|kh|Kh|kH|KH)\\d+")) {
 			// 3d5!h1
 			// es una tirada, de 3d5 explosivos donde guardamos dados
-		} else if (command.matches("\\d+[d]\\d+\\B(h|kh|Kh|kH|KH)\\d+[+-]\\d+")) {
+			severalExplosiveKeepRoll(command);
+		} else if (command.matches("\\d+[d]\\d+(h|kh|Kh|kH|KH)\\d+[+-]\\d+")) {
 			// 3d5l1+5
 			// es una tirada, de 3d5 donde guardamos dados y
 			// aplicamos el modificador
 			severalKeepRollWithModifier(command);
-		} else if (command.matches("\\d+[d]\\d+[hlHL]\\d+[+-]\\d+")) {
+		} else if (command.matches("\\d+[d]\\d+[!](h|kh|Kh|kH|KH)\\d+[+-]\\d+")) {
 			// 3d5!l1+5
 			// es una tirada, de 3d5 explosivos donde guardamos dados y
 			// aplicamos el modificador
+			severalExplosiveKeepRollWithModifier(command);
 		}
 
 		// Tirada multiple de varios dados donde guardamos dados **NECESITA
@@ -168,16 +174,16 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Tirada de Fate
-		else if (command.matches("\\b(fate|Fate|FATE)")) {
+		else if (command.matches("(fate|Fate|FATE)")) {
 			// es una tirada de Fate
-		} else if (command.matches("\\b(fate|Fate|FATE)[+-]\\d+")) {
+		} else if (command.matches("(fate|Fate|FATE)[+-]\\d+")) {
 			// esta es una tirada fate con modificador
 		}
 
 		// Tirada de Hitos
-		else if (command.matches("\\b(hitos|Hitos|HITOS)")) {
+		else if (command.matches("(hitos|Hitos|HITOS)")) {
 			// esta es una tirada Hitos con modificador
-		} else if (command.matches("\\b(hitos|Hitos|HITOS)[+-]\\d+")) {
+		} else if (command.matches("(hitos|Hitos|HITOS)[+-]\\d+")) {
 			// esta es una tirada Hitos con modificador
 		} else {
 			sendMessage.setText("Comando no reconocido");
@@ -212,20 +218,44 @@ public class Bot extends TelegramLongPollingBot {
 	}
 
 	private void simpleRoll(String command) {
+		// d5
 		numberOfSides = Integer.parseInt(command.substring(1));
 		rollResult = 0;
 		if (numberOfSides <= 1) {
-			sendMessage.setText("¿Que dado conoces con una sola cara?");
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
 		} else {
 			ArrayList<Integer> dice = new ArrayList<Integer>();
 			int valor = (int) (Math.random() * numberOfSides + 1);
 			dice.add(valor);
 			rollResult += valor;
 			Collections.sort(dice);
-			sendMessage.setText("[d" + numberOfSides + "]->" + dice + " = *" + rollResult + "*");
+			sendMessage.setText("*[d" + numberOfSides + "]*-> [" + dice + "] = *" + rollResult + "*");
 			sendMessage.setParseMode("Markdown");
 		}
 		answerUser();
+	}
+
+	private void explosiveRoll(String command) {
+		// d5!
+		String[] numericParts = command.split("\\D+");
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		rollResult = 0;
+		if (numberOfSides <= 1) {
+			sendMessage.setText("¿Un dado con menos de dos caras?");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			int valor = 0;
+			do {
+				valor = (int) (Math.random() * numberOfSides + 1);
+				dice.add(valor);
+				rollResult += valor;
+			} while (valor == numberOfSides);
+			// Collections.sort(dice);
+			sendMessage.setText("*[d" + numberOfSides + "!]*-> [" + dice + "] = *" + rollResult + "*");
+			sendMessage.setParseMode("Markdown");
+		}
+		answerUser();
+
 	}
 
 	private void simpleRollWithModifier(String command) {
@@ -239,7 +269,7 @@ public class Bot extends TelegramLongPollingBot {
 		rollModifier = Integer.parseInt(numericParts[2]);
 		rollResult = 0;
 		if (numberOfSides <= 1) {
-			sendMessage.setText("¿Que dado conoces con una sola cara?");
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
 		} else {
 			ArrayList<Integer> dice = new ArrayList<Integer>();
 			int valor = (int) (Math.random() * numberOfSides + 1);
@@ -247,10 +277,10 @@ public class Bot extends TelegramLongPollingBot {
 			rollResult += valor;
 			Collections.sort(dice);
 			if (modifier == '+') {
-				sendMessage.setText("[d" + numberOfSides + "" + modifier + rollModifier + "]->" + dice + "+"
+				sendMessage.setText("*[d" + numberOfSides + "" + modifier + rollModifier + "]*->[" + dice + "] + "
 						+ rollModifier + " = *" + (rollResult + rollModifier) + "*");
 			} else {
-				sendMessage.setText("[d" + numberOfSides + "" + modifier + rollModifier + "]->" + dice + "-"
+				sendMessage.setText("*[d" + numberOfSides + "" + modifier + rollModifier + "]*->[" + dice + "] - "
 						+ rollModifier + " = *" + (rollResult - rollModifier) + "*");
 			}
 		}
@@ -258,7 +288,41 @@ public class Bot extends TelegramLongPollingBot {
 		answerUser();
 	}
 
-	public void severalDice(String command) {
+	private void simpleExplosiveRollWithModifier(String command) {
+		// d5!+5
+		String[] numericParts = command.split("\\D+");
+		char modifier = '+';
+		if (command.contains("-")) {
+			modifier = '-';
+		}
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		rollModifier = Integer.parseInt(numericParts[2]);
+		rollResult = 0;
+		if (numberOfSides <= 1) {
+			sendMessage.setText("¿Que dado conoces menos de dos caras?");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			int valor = 0;
+			do {
+				valor = (int) (Math.random() * numberOfSides + 1);
+				dice.add(valor);
+				rollResult += valor;
+			} while (valor == numberOfSides);
+			// Collections.sort(dice);
+			if (modifier == '+') {
+				sendMessage.setText("*[d" + numberOfSides + "!" + modifier + rollModifier + "]*->[" + dice + "] + "
+						+ rollModifier + " = *" + (rollResult + rollModifier) + "*");
+			} else {
+				sendMessage.setText("*[d" + numberOfSides + "!" + modifier + rollModifier + "]*->[" + dice + "] - "
+						+ rollModifier + " = *" + (rollResult - rollModifier) + "*");
+			}
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
+	private void severalDice(String command) {
+		// 3d6
 		String[] numericParts = command.split("d");
 		numberOfDice = Integer.parseInt(numericParts[0]);
 		numberOfSides = Integer.parseInt(numericParts[1]);
@@ -267,7 +331,7 @@ public class Bot extends TelegramLongPollingBot {
 		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
 			sendMessage.setText("No puedo tirar esa cantidad de dados. Máximo 50 dados");
 		} else if (numberOfSides <= 1) {
-			sendMessage.setText("¿Que dado conoces con una sola cara?");
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
 		} else {
 			ArrayList<Integer> dice = new ArrayList<Integer>();
 			for (int i = 0; i < numberOfDice; i++) {
@@ -276,13 +340,45 @@ public class Bot extends TelegramLongPollingBot {
 				rollResult += valor;
 			}
 			Collections.sort(dice);
-			sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "]->" + dice + " = *" + rollResult + "*");
+			sendMessage
+					.setText("*[" + numberOfDice + "d" + numberOfSides + "]*-> [" + dice + "] = *" + rollResult + "*");
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
 	}
 
+	private void severalExplosiveDice(String command) {
+		// 3d6!
+		String[] numericParts = command.split("\\D+");
+		numberOfDice = Integer.parseInt(numericParts[0]);
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		rollResult = 0;
+
+		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
+			sendMessage.setText("No puedo tirar esa cantidad de dados. Máximo 50 dados");
+		} else if (numberOfSides <= 1) {
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			int valor = 0;
+			for (int i = 0; i < numberOfDice; i++) {
+				do {
+					valor = (int) (Math.random() * numberOfSides + 1);
+					dice.add(valor);
+					rollResult += valor;
+				} while (valor == numberOfSides);
+			}
+			// Collections.sort(dice);
+			sendMessage
+					.setText("*[" + numberOfDice + "d" + numberOfSides + "!]*-> [" + dice + "] = *" + rollResult + "*");
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+
+	}
+
 	private void severalDiceWithModifier(String command) {
+		// 3d6+10 2d8-7
 		String[] numericParts = command.split("d");
 		numberOfDice = Integer.parseInt(numericParts[0]);
 		String[] numericParts2 = null;
@@ -305,7 +401,7 @@ public class Bot extends TelegramLongPollingBot {
 		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
 			sendMessage.setText("No puedo tirar esa cantidad de dados. Máximo 50 dados");
 		} else if (numberOfSides <= 1) {
-			sendMessage.setText("¿Que dado conoces con una sola cara?");
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
 		} else {
 			ArrayList<Integer> dice = new ArrayList<Integer>();
 			for (int i = 0; i < numberOfDice; i++) {
@@ -315,11 +411,53 @@ public class Bot extends TelegramLongPollingBot {
 			}
 			Collections.sort(dice);
 			if (modifier == '+') {
-				sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]->"
-						+ dice + "+" + rollModifier + " = *" + (rollResult + rollModifier) + "*");
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]*-> ["
+						+ dice + "] + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
 			} else if (modifier == '-') {
-				sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]->"
-						+ dice + "-" + rollModifier + " = *" + (rollResult - rollModifier) + "*");
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]*-> ["
+						+ dice + "] - " + rollModifier + " = *" + (rollResult - rollModifier) + "*");
+			}
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
+	private void severalExplosiveDiceWithModifier(String command) {
+		// 3d6!+5
+		String[] numericParts = command.split("\\D+");
+		numberOfDice = Integer.parseInt(numericParts[0]);
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		rollModifier = Integer.parseInt(numericParts[2]);
+		rollResult = 0;
+		char modifier = '+';
+		if (command.contains("-")) {
+			modifier = '-';
+		} /*
+			 * else if (numericParts[1].contains("*")) { numericParts2 =
+			 * numericParts[1].split("\\*"); modifier = '*'; } else { numericParts2 =
+			 * numericParts[1].split("\\/"); modifier = '/'; }
+			 */
+		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
+			sendMessage.setText("No puedo tirar esa cantidad de dados. Máximo 50 dados");
+		} else if (numberOfSides <= 1) {
+			sendMessage.setText("¿Que dado conoces con menos de dos caras?");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			int valor = 0;
+			for (int i = 0; i < numberOfDice; i++) {
+				do {
+					valor = (int) (Math.random() * numberOfSides + 1);
+					dice.add(valor);
+					rollResult += valor;
+				} while (valor == numberOfSides);
+			}
+			// Collections.sort(dice);
+			if (modifier == '+') {
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!" + modifier + rollModifier + "]*-> ["
+						+ dice + "] + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
+			} else if (modifier == '-') {
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!" + modifier + rollModifier + "]*-> ["
+						+ dice + "] - " + rollModifier + " = *" + (rollResult - rollModifier) + "*");
 			}
 		}
 		sendMessage.setParseMode("Markdown");
@@ -327,6 +465,7 @@ public class Bot extends TelegramLongPollingBot {
 	}
 
 	private void severalKeepRoll(String command) {
+		// 3d6h1
 		String[] numericParts = command.split("\\D+");
 		numberOfDice = Integer.parseInt(numericParts[0]);
 		numberOfSides = Integer.parseInt(numericParts[1]);
@@ -336,7 +475,7 @@ public class Bot extends TelegramLongPollingBot {
 		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
 			sendMessage.setText("No puedo tirar esa cantidad de dados. Máximo 50 dados");
 		} else if (numberOfSides <= 1) {
-			sendMessage.setText("¿Que dado conoces con una sola cara?");
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
 		} else {
 			ArrayList<Integer> dice = new ArrayList<Integer>();
 			for (int i = 0; i < numberOfDice; i++) {
@@ -350,8 +489,8 @@ public class Bot extends TelegramLongPollingBot {
 			} else if (diceToKeep <= 0) {
 				sendMessage.setText("No puedes quedarte con ningún dado");
 			} else if (diceToKeep == numberOfDice) {
-				sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]->" + dice + " = *"
-						+ rollResult + "*");
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]*-> [" + dice
+						+ "] = *" + rollResult + "*");
 			} else {
 				rollResult = 0;
 				List<Integer> diceThrown = new ArrayList<Integer>(dice.subList(0, dice.size() - diceToKeep));
@@ -359,16 +498,62 @@ public class Bot extends TelegramLongPollingBot {
 				for (Integer value : diceKept) {
 					rollResult += value;
 				}
-				sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]->_" + diceThrown
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]*->_" + diceThrown
 						+ "_ [" + diceKept + "] = *" + rollResult + "*");
-
 			}
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
 	}
 
+	private void severalExplosiveKeepRoll(String command) {
+		// 3d6!h1
+		String[] numericParts = command.split("\\D+");
+		numberOfDice = Integer.parseInt(numericParts[0]);
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		diceToKeep = Integer.parseInt(numericParts[2]);
+		rollResult = 0;
+
+		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
+			sendMessage.setText("No puedo tirar esa cantidad de dados. Máximo 50 dados");
+		} else if (numberOfSides <= 1) {
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			int valor = 0;
+			for (int i = 0; i < numberOfDice; i++) {
+				do {
+					valor = (int) (Math.random() * numberOfSides + 1);
+					dice.add(valor);
+					rollResult += valor;
+				} while (valor == numberOfSides);
+			}
+			Collections.sort(dice);
+			if (diceToKeep > numberOfDice) {
+				sendMessage.setText("La tirada no es de tantos dados");
+			} else if (diceToKeep <= 0) {
+				sendMessage.setText("No puedes quedarte con ningún dado");
+			} else if (diceToKeep == numberOfDice) {
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]*-> [" + dice
+						+ "] = *" + rollResult + "*");
+			} else {
+				rollResult = 0;
+				List<Integer> diceThrown = new ArrayList<Integer>(dice.subList(0, dice.size() - diceToKeep));
+				List<Integer> diceKept = dice.subList(dice.size() - diceToKeep, dice.size());
+				for (Integer value : diceKept) {
+					rollResult += value;
+				}
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "]*->_" + diceThrown
+						+ "_ [" + diceKept + "] = *" + rollResult + "*");
+			}
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+
+	}
+
 	private void severalKeepRollWithModifier(String command) {
+		// 10d6h3+5
 		String[] numericParts = command.split("\\D+");
 		numberOfDice = Integer.parseInt(numericParts[0]);
 		numberOfSides = Integer.parseInt(numericParts[1]);
@@ -379,11 +564,10 @@ public class Bot extends TelegramLongPollingBot {
 			modifier = '-';
 		}
 		rollResult = 0;
-
 		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
 			sendMessage.setText("No puedo tirar esa cantidad de dados. Máximo 50 dados");
 		} else if (numberOfSides <= 1) {
-			sendMessage.setText("¿Que dado conoces con una sola cara?");
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
 		} else {
 			ArrayList<Integer> dice = new ArrayList<Integer>();
 			for (int i = 0; i < numberOfDice; i++) {
@@ -398,11 +582,13 @@ public class Bot extends TelegramLongPollingBot {
 				sendMessage.setText("No puedes quedarte con ningún dado");
 			} else if (diceToKeep == numberOfDice) {
 				if (modifier == '+') {
-					sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "+" + rollModifier
-							+ "]->" + dice + " + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
+					sendMessage.setText(
+							"*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "+" + rollModifier + "]*-> ["
+									+ dice + "] + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
 				} else {
-					sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "-" + rollModifier
-							+ "]->" + dice + " - " + rollModifier + " = *" + (rollResult - rollModifier) + "*");
+					sendMessage.setText(
+							"*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "-" + rollModifier + "]*-> ["
+									+ dice + "] - " + rollModifier + " = *" + (rollResult - rollModifier) + "*");
 				}
 			} else {
 				rollResult = 0;
@@ -412,22 +598,81 @@ public class Bot extends TelegramLongPollingBot {
 					rollResult += value;
 				}
 				if (modifier == '+') {
-					sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "+" + rollModifier
-							+ "]->_" + diceThrown + "_ [" + diceKept + "] + " + rollModifier + " = *"
+					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "+"
+							+ rollModifier + "]*->_" + diceThrown + "_ [" + diceKept + "] + " + rollModifier + " = *"
 							+ (rollResult + rollModifier) + "*");
 				} else {
-					sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "-" + rollModifier
-							+ "]->_" + diceThrown + "_ [" + diceKept + "] - " + rollModifier + " = *"
+					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "h" + diceToKeep + "-"
+							+ rollModifier + "]*->_" + diceThrown + "_ [" + diceKept + "] - " + rollModifier + " = *"
 							+ (rollResult - rollModifier) + "*");
 				}
-				// sendMessage.setText("[" + numberOfDice + "d" + numberOfSides + "h" +
-				// diceToKeep + "]->_" + diceThrown + "_ [" + diceKept + "] = " + rollResult);
-
 			}
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
+	}
 
+	private void severalExplosiveKeepRollWithModifier(String command) {
+		// 10d6!h3+5
+		String[] numericParts = command.split("\\D+");
+		numberOfDice = Integer.parseInt(numericParts[0]);
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		diceToKeep = Integer.parseInt(numericParts[2]);
+		rollModifier = Integer.parseInt(numericParts[3]);
+		char modifier = '+';
+		if (command.contains("-")) {
+			modifier = '-';
+		}
+		rollResult = 0;
+		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
+			sendMessage.setText("No puedo tirar esa cantidad de dados. Máximo 50 dados");
+		} else if (numberOfSides <= 1) {
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			int valor = 0;
+			for (int i = 0; i < numberOfDice; i++) {
+				do {
+					valor = (int) (Math.random() * numberOfSides + 1);
+					dice.add(valor);
+					rollResult += valor;
+				} while (valor == numberOfSides);
+			}
+			Collections.sort(dice);
+			if (diceToKeep > numberOfDice) {
+				sendMessage.setText("La tirada no es de tantos dados");
+			} else if (diceToKeep <= 0) {
+				sendMessage.setText("No puedes quedarte con ningún dado");
+			} else if (diceToKeep == numberOfDice) {
+				if (modifier == '+') {
+					sendMessage.setText(
+							"*[" + numberOfDice + "d" + numberOfSides + "!h" + diceToKeep + "+" + rollModifier + "]*-> ["
+									+ dice + "] + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
+				} else {
+					sendMessage.setText(
+							"*[" + numberOfDice + "d" + numberOfSides + "!h" + diceToKeep + "-" + rollModifier + "]*-> ["
+									+ dice + "] - " + rollModifier + " = *" + (rollResult - rollModifier) + "*");
+				}
+			} else {
+				rollResult = 0;
+				List<Integer> diceThrown = new ArrayList<Integer>(dice.subList(0, dice.size() - diceToKeep));
+				List<Integer> diceKept = dice.subList(dice.size() - diceToKeep, dice.size());
+				for (Integer value : diceKept) {
+					rollResult += value;
+				}
+				if (modifier == '+') {
+					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!h" + diceToKeep + "+"
+							+ rollModifier + "]*->_" + diceThrown + "_ [" + diceKept + "] + " + rollModifier + " = *"
+							+ (rollResult + rollModifier) + "*");
+				} else {
+					sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "!h" + diceToKeep + "-"
+							+ rollModifier + "]*->_" + diceThrown + "_ [" + diceKept + "] - " + rollModifier + " = *"
+							+ (rollResult - rollModifier) + "*");
+				}
+			}
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
 	}
 
 }
