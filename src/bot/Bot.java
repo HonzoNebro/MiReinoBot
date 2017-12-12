@@ -17,14 +17,16 @@ public class Bot extends TelegramLongPollingBot {
 	@Override
 	public String getBotUsername() {
 		// SUSTITUIR POR EL ALIAS DE TU BOT
-		return "NULL";
+		return "";
 	}
 
 	@Override
 	public void onUpdateReceived(Update arg0) {
 
 		// Almacenar la ID del chat para poder contestar
+		//sendMessage = new SendMessage().setChatId(arg0.getMessage().getChatId());
 		sendMessage = new SendMessage().setChatId(arg0.getMessage().getChatId());
+		sendMessage.setReplyToMessageId(arg0.getMessage().getMessageId());
 
 		// Imprimir por consola el mensaje recibido
 		System.out.println("\nMENSAJE RECIBIDO DE " + arg0.getMessage().getFrom().getFirstName() + ": "
@@ -50,19 +52,20 @@ public class Bot extends TelegramLongPollingBot {
 		} catch (TelegramApiException e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 	@Override
 	public String getBotToken() {
 		// SUSTITUIR POR EL TOKEN DE TU BOT
-		return "NULL";
+		return "";
 	}
 
 	private void findCommand(String command) {
 		// Comandos admitidos
 		if (command.equalsIgnoreCase("ayuda")) {
 			sendMessage.setText("Con este bot puedes lanzar una serie de dados ¡Y cada vez más!\n"
-					+ "\n/d6 \n/1d20 \n/3d10+5 \n/3d3! \n/6d3h2 \n/4d3!h2+7");
+					+ "\n/d6 \n/1d20 \n/3d10+5 \n/3d3! \n/6d3h2 \n/4d3!h2+7\n/savage4 /s6...8,10,12");
 			sendMessage.setParseMode("Markdown");
 			answerUser();
 		}
@@ -386,7 +389,6 @@ public class Bot extends TelegramLongPollingBot {
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
-
 	}
 
 	private void severalDiceWithModifier(String command) {
@@ -764,8 +766,8 @@ public class Bot extends TelegramLongPollingBot {
 			increases++;
 		}
 		if (numberOfSides == 4) {
-			sendMessage.setText("*Savage Worlds [6] [4] -2*\nSalvaje: [" + wildDice + "] -2 = " + (wildResult-2)
-					+ "\nHabilidad: [" + dice + "] -2 = " + (rollResult-2) + "\n*Total: " + (finalResult-2) + " -> "
+			sendMessage.setText("*Savage Worlds [6] [4] -2*\nSalvaje: [" + wildDice + "] -2 = " + (wildResult - 2)
+					+ "\nHabilidad: [" + dice + "] -2 = " + (rollResult - 2) + "\n*Total: " + (finalResult - 2) + " -> "
 					+ (increases - 1) + " aumento/s*");
 		} else {
 			sendMessage.setText("*Savage Worlds [6] [" + numberOfSides + "]*\nSalvaje: [" + wildDice + "] = "
@@ -775,5 +777,4 @@ public class Bot extends TelegramLongPollingBot {
 		sendMessage.setParseMode("Markdown");
 		answerUser();
 	}
-
 }
