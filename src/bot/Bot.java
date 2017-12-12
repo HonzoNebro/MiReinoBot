@@ -192,8 +192,9 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Tirada de Savage Worlds
-		else if (command.matches("(s|savage")) {
-
+		else if (command.matches("(s|savage)(4|6|8|10|12)")) {
+			// roll {1d6+1d8}kh1
+			savageWorldRoll(command);
 		}
 
 		// Otros comandos
@@ -267,7 +268,6 @@ public class Bot extends TelegramLongPollingBot {
 			sendMessage.setParseMode("Markdown");
 		}
 		answerUser();
-
 	}
 
 	private void simpleRollWithModifier(String command) {
@@ -729,6 +729,48 @@ public class Bot extends TelegramLongPollingBot {
 							+ (rollResult - rollModifier) + "*");
 				}
 			}
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
+	private void savageWorldRoll(String command) {
+		// "(s|savage)(4|6|8|10|12)"
+		// roll {1d6+1d8}kh1
+		String[] numericParts = command.split("\\D+");
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		rollResult = 0;
+
+		ArrayList<Integer> wildDice = new ArrayList<Integer>();
+		int wild = 0, wildResult = 0;
+		do {
+			wild = (int) (Math.random() * 6 + 1);
+			wildDice.add(wild);
+			wildResult += wild;
+			System.out.println("wild" + wild);
+		} while (wild == 6);
+
+		ArrayList<Integer> dice = new ArrayList<Integer>();
+		int value = 0;
+		do {
+			value = (int) (Math.random() * numberOfSides + 1);
+			dice.add(value);
+			rollResult += value;
+			System.out.println("roll" + value);
+		} while (value == numberOfSides);
+		int finalResult = (wildResult > rollResult) ? wildResult : rollResult;
+		int increases = 1;
+		while ((finalResult - increases * 4) - 4 >= 0) {
+			increases++;
+		}
+		if (numberOfSides == 4) {
+			sendMessage.setText("*Savage Worlds [6] [4] -2*\nSalvaje: [" + wildDice + "] -2 = " + (wildResult-2)
+					+ "\nHabilidad: [" + dice + "] -2 = " + (rollResult-2) + "\n*Total: " + (finalResult-2) + " -> "
+					+ (increases - 1) + " aumento/s*");
+		} else {
+			sendMessage.setText("*Savage Worlds [6] [" + numberOfSides + "]*\nSalvaje: [" + wildDice + "] = "
+					+ wildResult + "\nHabilidad: [" + dice + "] = " + rollResult + "\n*Total: " + finalResult + " -> "
+					+ (increases - 1) + " aumento/s*");
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
