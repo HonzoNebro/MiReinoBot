@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.methods.send.SendVideo;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
@@ -13,6 +14,7 @@ public class Bot extends TelegramLongPollingBot {
 
 	int numberOfDice = 0, numberOfSides = 0, rollModifier = 0, diceToKeep = 0, rollResult = 0;
 	SendMessage sendMessage;
+	SendVideo sendVideo;
 
 	@Override
 	public String getBotUsername() {
@@ -24,9 +26,11 @@ public class Bot extends TelegramLongPollingBot {
 	public void onUpdateReceived(Update arg0) {
 
 		// Almacenar la ID del chat para poder contestar
-		//sendMessage = new SendMessage().setChatId(arg0.getMessage().getChatId());
+		// sendMessage = new SendMessage().setChatId(arg0.getMessage().getChatId());
 		sendMessage = new SendMessage().setChatId(arg0.getMessage().getChatId());
 		sendMessage.setReplyToMessageId(arg0.getMessage().getMessageId());
+		sendVideo = new SendVideo().setChatId(arg0.getMessage().getChatId());
+		// sendVideo.setReplyToMessageId(arg0.getMessage().getMessageId());
 
 		// Imprimir por consola el mensaje recibido
 		System.out.println("\nMENSAJE RECIBIDO DE " + arg0.getMessage().getFrom().getFirstName() + ": "
@@ -52,7 +56,7 @@ public class Bot extends TelegramLongPollingBot {
 		} catch (TelegramApiException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
@@ -195,9 +199,24 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Tirada de Savage Worlds
-		else if (command.matches("(s|savage)(4|6|8|10|12)")) {
+		else if (command.matches("(s|savage)(-2|4|6|8|10|12)")) {
 			// roll {1d6+1d8}kh1
 			savageWorldRoll(command);
+		}
+
+		// Tirada de In Nomine Santis
+		else if (command.matches("(ins)")) {
+			// roll 3d6 sin ordenar
+			inNomineSatanisRoll(command);
+		}
+
+		// Tirada de Vampiro
+		else if (command.matches("[v]\\d+")) {
+			vampireRoll(command);
+		}
+		// Tirada de Vampirocon dificultad personalizada
+		else if (command.matches("[v]\\d+([d]\\d+)?")) {
+			vampireRollWithCustomDificulty(command);
 		}
 
 		// Otros comandos
@@ -765,7 +784,7 @@ public class Bot extends TelegramLongPollingBot {
 		while ((finalResult - increases * 4) - 4 >= 0) {
 			increases++;
 		}
-		if (numberOfSides == 4) {
+		if (command.contains("-")) {
 			sendMessage.setText("*Savage Worlds [6] [4] -2*\nSalvaje: [" + wildDice + "] -2 = " + (wildResult - 2)
 					+ "\nHabilidad: [" + dice + "] -2 = " + (rollResult - 2) + "\n*Total: " + (finalResult - 2) + " -> "
 					+ (increases - 1) + " aumento/s*");
@@ -776,5 +795,122 @@ public class Bot extends TelegramLongPollingBot {
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
+	}
+
+	private void inNomineSatanisRoll(String command) {
+		// 3d6
+		rollResult = 0;
+		numberOfDice = 3;
+		numberOfSides = 6;
+		String roll = "";
+		for (int i = 0; i < numberOfDice; i++) {
+			int valor = (int) (Math.random() * numberOfSides + 1);
+			roll += valor;
+		}
+		if (roll == "111") {
+			sendMessage.setText("*[In Nomine Satanis]* = *" + roll + "*");
+			sendVideo.setVideo("https://media.giphy.com/media/l2QE7PACf4cJccwA8/giphy.gif");
+		} else if (roll == "666") {
+			sendMessage.setText("*[In Nomine Satanis]* = *" + roll + "*");
+			sendVideo.setVideo("https://media.giphy.com/media/hB5vNhUepvcek/giphy.mp4");
+		} else {
+			sendMessage.setText("*[In Nomine Satanis]* = " + roll);
+			// sendVideo.setVideo("https://media.giphy.com/media/l2QE7PACf4cJccwA8/giphy.gif");
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+		try {
+			sendVideo(sendVideo);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void vampireRoll(String command) {
+		// v7
+		String[] numericParts = command.split("\\D+");
+		numberOfDice = Integer.parseInt(numericParts[1]);
+		int difficulty = 6;
+		numberOfSides = 10;
+		int success = 0;
+		int ones = 0;
+
+		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
+			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			for (int i = 0; i < numberOfDice; i++) {
+				int valor = (int) (Math.random() * numberOfSides + 1);
+				dice.add(valor);
+				if (valor == 1) {
+					ones++;
+				}
+				if (valor >= difficulty) {
+					success++;
+				}
+			}
+			Collections.sort(dice);
+			if (success > ones) {
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
+						+ "] = *" + (success - ones) + " éxitos*");
+			} else if (success == ones) {
+				sendMessage.setText(
+						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
+			} else {
+				sendMessage.setText(
+						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Pífia*");
+			}
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
+	private void vampireRollWithCustomDificulty(String command) {
+		//v6d3
+		String[] numericParts = command.split("\\D+");
+		numberOfDice = Integer.parseInt(numericParts[1]);
+		int difficulty = 6;
+		if (difficulty == Integer.parseInt(numericParts[2]))
+			;
+		{
+			difficulty = Integer.parseInt(numericParts[2]);
+		}
+		System.out.println("entrada: " + command);
+		System.out.println("numericParts: " + numericParts[2]);
+		System.out.println("dados: " + numberOfDice + " dificultad: " + difficulty);
+		numberOfSides = 10;
+		int success = 0;
+		int ones = 0;
+
+		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
+			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			for (int i = 0; i < numberOfDice; i++) {
+				int valor = (int) (Math.random() * numberOfSides + 1);
+				dice.add(valor);
+				if (valor == 1) {
+					ones++;
+				}
+				if (valor >= difficulty) {
+					success++;
+				}
+			}
+			Collections.sort(dice);
+			if (success > ones) {
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
+						+ "] = *" + (success - ones) + " éxitos*");
+			} else if (success == ones) {
+				sendMessage.setText(
+						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
+			} else {
+				sendMessage.setText(
+						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Pífia*");
+			}
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+
 	}
 }
