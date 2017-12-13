@@ -69,7 +69,8 @@ public class Bot extends TelegramLongPollingBot {
 		// Comandos admitidos
 		if (command.equalsIgnoreCase("ayuda")) {
 			sendMessage.setText("Con este bot puedes lanzar una serie de dados ¡Y cada vez más!\n"
-					+ "\n/d6 \n/1d20 \n/3d10+5 \n/3d3! \n/6d3h2 \n/4d3!h2+7\n/savage4 /s6...8,10,12");
+//					+ "\n/d6... Tiradas de hasta 50 caras\n/d3...+/-7.... Tiradas de hasta 50 caras con modificador \n/1...d20...50 Tiradas de varios dados, hasta 50 caras \n/3...d10...50+/-5... Tiradas de varios dados, hasta 50 caras con modificador \n/3...d3...50! Tiradas de varios \n/6...d3...50h/kh/l/kl2... \n/4...d3...50!h/kh/l/kl2...+7...\n/savage/s -2,4,6,8,10,12\n/vampiro5... /v6...d7... /vamp8...");
+					+ "Simples [/d6]\nVarios dados [/3d6]\nCon modificador [/3d10+5 /2d12-7]\nDados explosivos [/1d20!+3]\nManteniendo dados [/3d20!h1 /6d10kh2 /4d8l1 /6d3!-8kl2]\nSavage Worlds [/s-2 /s4 /s6 /s8 /s10 /s12]\nIn Nomine Satanis [/ins]\nVampiro [/vampiro6 /vamp7d8 /v10d4]");
 			sendMessage.setParseMode("Markdown");
 			answerUser();
 		}
@@ -211,11 +212,11 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Tirada de Vampiro
-		else if (command.matches("[v]\\d+")) {
+		else if (command.matches("(v|vampiro|vamp)\\d+")) {
 			vampireRoll(command);
 		}
 		// Tirada de Vampirocon dificultad personalizada
-		else if (command.matches("[v]\\d+([d]\\d+)?")) {
+		else if (command.matches("(v|vampiro|vamp)\\d+([d]\\d+)?")) {
 			vampireRollWithCustomDificulty(command);
 		}
 
@@ -239,7 +240,6 @@ public class Bot extends TelegramLongPollingBot {
 		 * sacas el máximo en el dado vuelves a tirar y sumas (con un -1 al nuevo dado)
 		 * y si vuelves a sacar otra vez el máximo vuelves a tirar...
 		 * 
-		 * tiradas vampiro (dificultad 3d5>6)
 		 * 
 		 * reroll (relanzar) 3d6r<3
 		 * 
