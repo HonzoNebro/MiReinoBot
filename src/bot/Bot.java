@@ -52,6 +52,7 @@ public class Bot extends TelegramLongPollingBot {
 		// también se escribe un mensaje por consola
 		try {
 			System.out.println("RESPUESTA: " + sendMessage.getText());
+			sendMessage.setParseMode("Markdown");
 			sendMessage(sendMessage);
 		} catch (TelegramApiException e) {
 			e.printStackTrace();
@@ -66,11 +67,16 @@ public class Bot extends TelegramLongPollingBot {
 	}
 
 	private void findCommand(String command) {
+		// Comando de pruebas
+		if (command.equalsIgnoreCase("test")) {
+			sendMessage.setText("Esto es un test");
+			answerUser();
+		}
+
 		// Comandos admitidos
-		if (command.equalsIgnoreCase("ayuda")) {
+		else if (command.matches("(ayuda|help)")) {
 			sendMessage.setText("Con este bot puedes lanzar una serie de dados ¡Y cada vez más!\n"
-//					+ "\n/d6... Tiradas de hasta 50 caras\n/d3...+/-7.... Tiradas de hasta 50 caras con modificador \n/1...d20...50 Tiradas de varios dados, hasta 50 caras \n/3...d10...50+/-5... Tiradas de varios dados, hasta 50 caras con modificador \n/3...d3...50! Tiradas de varios \n/6...d3...50h/kh/l/kl2... \n/4...d3...50!h/kh/l/kl2...+7...\n/savage/s -2,4,6,8,10,12\n/vampiro5... /v6...d7... /vamp8...");
-					+ "Simples [/d6]\nVarios dados [/3d6]\nCon modificador [/3d10+5 /2d12-7]\nDados explosivos [/1d20!+3]\nManteniendo dados [/3d20!h1 /6d10kh2 /4d8l1 /6d3!-8kl2]\nSavage Worlds [/s-2 /s4 /s6 /s8 /s10 /s12]\nIn Nomine Satanis [/ins]\nVampiro [/vampiro6 /vamp7d8 /v10d4]");
+					+ "Simples [/d6]\nVarios dados [/3d6]\nCon modificador [/3d10+5 /2d12-7]\nDados explosivos [/1d20!+3]\nManteniendo dados [/3d20!h1 /6d10kh2 /4d8l1 /6d3!-8kl2]\nSavage Worlds [/s-2 /s4 /s6 /s8 /s10 /s12]\nIn Nomine Satanis [/ins]\nVampiro [/vampiro6 /vamp7d8 /v10d4]\nFate/Fudge [/f /fate+5 /fudge-7]");
 			sendMessage.setParseMode("Markdown");
 			answerUser();
 		}
@@ -186,10 +192,12 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Tirada de Fate
-		else if (command.matches("(f|fate)")) {
+		else if (command.matches("(f|fate|fudge)")) {
 			// es una tirada de Fate
-		} else if (command.matches("(f|fate)[+-]\\d+")) {
+			fateRoll(command);
+		} else if (command.matches("(f|fate|fudge)[+-]\\d+")) {
 			// esta es una tirada fate con modificador
+			fateRollWithModifier(command);
 		}
 
 		// Tirada de Hitos
@@ -853,7 +861,7 @@ public class Bot extends TelegramLongPollingBot {
 			Collections.sort(dice);
 			if (success > ones) {
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
-						+ "] = *" + (success - ones) + " éxitos*");
+						+ "] = *" + (success - ones) + " éxito/s*");
 			} else if (success == ones) {
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
@@ -867,7 +875,7 @@ public class Bot extends TelegramLongPollingBot {
 	}
 
 	private void vampireRollWithCustomDificulty(String command) {
-		//v6d3
+		// v6d3
 		String[] numericParts = command.split("\\D+");
 		numberOfDice = Integer.parseInt(numericParts[1]);
 		int difficulty = 6;
@@ -900,7 +908,7 @@ public class Bot extends TelegramLongPollingBot {
 			Collections.sort(dice);
 			if (success > ones) {
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
-						+ "] = *" + (success - ones) + " éxitos*");
+						+ "] = *" + (success - ones) + " éxito/s*");
 			} else if (success == ones) {
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
@@ -911,6 +919,69 @@ public class Bot extends TelegramLongPollingBot {
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
+	}
 
+	private void fateRoll(String command) {
+		numberOfDice = 4;
+		numberOfSides = 6;
+		rollResult = 0;
+		ArrayList<Integer> dice = new ArrayList<Integer>();
+		for (int i = 0; i < numberOfDice; i++) {
+			int valor = (int) (Math.random() * numberOfSides + 1);
+			dice.add(valor);
+		}
+		sendMessage.setText("*[FATE]*-> ");
+		for (Integer dado : dice) {
+			if (dado == 1 || dado == 2) {
+				sendMessage.setText(sendMessage.getText() + "➖");
+				rollResult -= 1;
+			} else if (dado == 3 || dado == 4) {
+				sendMessage.setText(sendMessage.getText() + "⭕");
+			} else if (dado == 5 || dado == 6) {
+				sendMessage.setText(sendMessage.getText() + "➕");
+				rollResult += 1;
+			}
+		}
+		sendMessage.setText(sendMessage.getText() + " = *" + rollResult + "*");
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
+	private void fateRollWithModifier(String command) {
+		// fate+5 f-7
+		String[] numericParts = command.split("\\D+");
+		rollModifier = Integer.parseInt(numericParts[1]);
+		numberOfDice = 4;
+		numberOfSides = 6;
+		rollResult = 0;
+		char modifier = '+';
+		if (command.contains("-")) {
+			modifier = '-';
+		}
+		ArrayList<Integer> dice = new ArrayList<Integer>();
+		for (int i = 0; i < numberOfDice; i++) {
+			int valor = (int) (Math.random() * numberOfSides + 1);
+			dice.add(valor);
+		}
+		sendMessage.setText("*[FATE]*-> ");
+		for (Integer dado : dice) {
+			if (dado == 1 || dado == 2) {
+				sendMessage.setText(sendMessage.getText() + "➖");
+				rollResult -= 1;
+			} else if (dado == 3 || dado == 4) {
+				sendMessage.setText(sendMessage.getText() + "⭕");
+			} else if (dado == 5 || dado == 6) {
+				sendMessage.setText(sendMessage.getText() + "➕");
+				rollResult += 1;
+			}
+		}
+		if (modifier == '+') {
+			sendMessage.setText(sendMessage.getText() + "+" + rollModifier + " = *" + (rollResult+rollModifier) + "*");
+		} else {
+			sendMessage.setText(sendMessage.getText() + "-" + rollModifier + " = *" + (rollResult-rollModifier) + "*");
+		}
+		//sendMessage.setText(sendMessage.getText() + " *" + rollResult + "*");
+		sendMessage.setParseMode("Markdown");
+		answerUser();
 	}
 }
