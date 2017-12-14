@@ -3,5 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/roberto.lorenzo.BABEL-SI/git/MiReinoBot/telegrambots-2.4.4.5-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="C:/Users/roberto.lorenzo.BABEL-SI/eclipse-workspace/emoji-java-4.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/roberto.lorenzo.BABEL-SI/eclipse-workspace/emoji-java-4.0.0-javadoc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
