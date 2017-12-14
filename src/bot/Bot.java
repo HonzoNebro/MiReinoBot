@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.telegram.telegrambots.api.methods.send.SendDocument;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.api.methods.send.SendVideo;
+import org.telegram.telegrambots.api.objects.PhotoSize;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
@@ -15,6 +18,8 @@ public class Bot extends TelegramLongPollingBot {
 	int numberOfDice = 0, numberOfSides = 0, rollModifier = 0, diceToKeep = 0, rollResult = 0;
 	SendMessage sendMessage;
 	SendVideo sendVideo;
+	SendPhoto sendPhoto;
+	SendDocument sendDocument;
 
 	@Override
 	public String getBotUsername() {
@@ -30,19 +35,31 @@ public class Bot extends TelegramLongPollingBot {
 		sendMessage = new SendMessage().setChatId(arg0.getMessage().getChatId());
 		sendMessage.setReplyToMessageId(arg0.getMessage().getMessageId());
 		sendVideo = new SendVideo().setChatId(arg0.getMessage().getChatId());
+		sendPhoto = new SendPhoto().setChatId(arg0.getMessage().getChatId());
 		// sendVideo.setReplyToMessageId(arg0.getMessage().getMessageId());
 
 		// Imprimir por consola el mensaje recibido
-		System.out.println("\nMENSAJE RECIBIDO DE " + arg0.getMessage().getFrom().getFirstName() + ": "
-				+ arg0.getMessage().getText().toLowerCase());
+		if (arg0.getMessage().hasText()) {
+			System.out.println("\nMENSAJE RECIBIDO DE " + arg0.getMessage().getFrom().getFirstName() + ": "
+					+ arg0.getMessage().getText().toLowerCase());
 
-		// Si el mensaje es un comando, se intenta averiguar cual
-		if (arg0.getMessage().getText().startsWith("/")) {
-			findCommand(arg0.getMessage().getText().toLowerCase().substring(1));
-		} else {
-			// En caso contrario responde con un mensaje, ayudando a usar el bot
-			sendMessage.setText("Hola " + arg0.getMessage().getFrom().getFirstName()
-					+ " , Por ahora solo respondo a la tirada de dados, escribe /ayuda para más información");
+			// Si el mensaje es un comando, se intenta averiguar cual
+			if (arg0.getMessage().getText().startsWith("/")) {
+				findCommand(arg0.getMessage().getText().toLowerCase().substring(1));
+			} else {
+				// En caso contrario responde con un mensaje, ayudando a usar el bot
+				sendMessage.setText("Hola " + arg0.getMessage().getFrom().getFirstName()
+						+ " , Por ahora solo respondo a la tirada de dados, escribe /ayuda para más información");
+			}
+		}
+		if (arg0.getMessage().hasDocument()) {
+			System.out.println("Document: " + arg0.getMessage().getDocument());
+		}
+		if (arg0.getMessage().hasPhoto()) {
+			List<PhotoSize> fotos = arg0.getMessage().getPhoto();
+			for (PhotoSize foto : fotos) {
+				System.out.println("Datos foto: " + foto);
+			}
 		}
 
 	}
@@ -53,7 +70,7 @@ public class Bot extends TelegramLongPollingBot {
 		try {
 			System.out.println("RESPUESTA: " + sendMessage.getText());
 			sendMessage.setParseMode("Markdown");
-			sendMessage(sendMessage);
+			execute(sendMessage);
 		} catch (TelegramApiException e) {
 			e.printStackTrace();
 		}
@@ -818,17 +835,29 @@ public class Bot extends TelegramLongPollingBot {
 		if (roll == "111") {
 			sendMessage.setText("*[In Nomine Satanis]* = *" + roll + "*");
 			sendVideo.setVideo("https://media.giphy.com/media/l2QE7PACf4cJccwA8/giphy.gif");
+			try {
+				sendVideo(sendVideo);
+			} catch (TelegramApiException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if (roll == "666") {
 			sendMessage.setText("*[In Nomine Satanis]* = *" + roll + "*");
 			sendVideo.setVideo("https://media.giphy.com/media/hB5vNhUepvcek/giphy.mp4");
+			try {
+				sendVideo(sendVideo);
+			} catch (TelegramApiException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			sendMessage.setText("*[In Nomine Satanis]* = " + roll);
-			// sendVideo.setVideo("https://media.giphy.com/media/l2QE7PACf4cJccwA8/giphy.gif");
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
+		sendPhoto.setPhoto("https://i.imgur.com/PWsDzmW.jpg");
 		try {
-			sendVideo(sendVideo);
+			sendPhoto(sendPhoto);
 		} catch (TelegramApiException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -976,11 +1005,13 @@ public class Bot extends TelegramLongPollingBot {
 			}
 		}
 		if (modifier == '+') {
-			sendMessage.setText(sendMessage.getText() + "+" + rollModifier + " = *" + (rollResult+rollModifier) + "*");
+			sendMessage
+					.setText(sendMessage.getText() + "+" + rollModifier + " = *" + (rollResult + rollModifier) + "*");
 		} else {
-			sendMessage.setText(sendMessage.getText() + "-" + rollModifier + " = *" + (rollResult-rollModifier) + "*");
+			sendMessage
+					.setText(sendMessage.getText() + "-" + rollModifier + " = *" + (rollResult - rollModifier) + "*");
 		}
-		//sendMessage.setText(sendMessage.getText() + " *" + rollResult + "*");
+		// sendMessage.setText(sendMessage.getText() + " *" + rollResult + "*");
 		sendMessage.setParseMode("Markdown");
 		answerUser();
 	}
