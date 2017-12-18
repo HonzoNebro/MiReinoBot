@@ -91,9 +91,9 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Comandos admitidos
-		else if (command.matches("(ayuda|help)")) {
+		else if (command.matches("(ayuda|help|start)")) {
 			sendMessage.setText("Con este bot puedes lanzar una serie de dados ¡Y cada vez más!\n"
-					+ "Simples [/d6]\nVarios dados [/3d6]\nCon modificador [/3d10+5 /2d12-7]\nDados explosivos [/1d20!+3]\nManteniendo dados [/3d20!h1 /6d10kh2 /4d8l1 /6d3!-8kl2]\nSavage Worlds [/s-2 /s4 /s6 /s8 /s10 /s12]\nIn Nomine Satanis [/ins]\nVampiro [/vampiro6 /vamp7d8 /v10d4]\nFate/Fudge [/f /fate+5 /fudge-7]");
+					+ "Simples [/d6]\nVarios dados [/3d6]\nCon modificador [/3d10+5 /2d12-7]\nDados explosivos [/1d20!+3]\nManteniendo dados [/3d20!h1 /6d10kh2 /4d8l1 /6d3!-8kl2]\nSavage Worlds [/s-2 /s4 /s6 /s8 /s10 /s12]\nIn Nomine Satanis [/ins]\nVampiro [/vampiro6 /vamp7d8 /v10d4]\nFate/Fudge [/f /fate+5 /fudge-7]\nHitos [/h /h+7 /hitos /hitos+5]");
 			sendMessage.setParseMode("Markdown");
 			answerUser();
 		}
@@ -219,9 +219,11 @@ public class Bot extends TelegramLongPollingBot {
 
 		// Tirada de Hitos
 		else if (command.matches("(h|hitos)")) {
+			hitosRoll(command);
 			// esta es una tirada Hitos con modificador
-		} else if (command.matches("(h|hitos)[+-]\\d+")) {
+		} else if (command.matches("(h|hitos)[+]\\d+")) {
 			// esta es una tirada Hitos con modificador
+			hitosRollWithModifier(command);
 		}
 
 		// Tirada de Savage Worlds
@@ -247,7 +249,7 @@ public class Bot extends TelegramLongPollingBot {
 
 		// Otros comandos
 		else {
-			sendMessage.setText("Comando no reconocido");
+			sendMessage.setText("Comando no reconocido. Escribe /ayuda para más información");
 			answerUser();
 		}
 		/*
@@ -437,7 +439,7 @@ public class Bot extends TelegramLongPollingBot {
 
 	private void severalDiceWithModifier(String command) {
 		// 3d6+10 2d8-7
-		String[] numericParts = command.split("d");
+		String[] numericParts = command.split("\\d");
 		numberOfDice = Integer.parseInt(numericParts[0]);
 		String[] numericParts2 = null;
 		char modifier = 0;
@@ -1014,5 +1016,81 @@ public class Bot extends TelegramLongPollingBot {
 		// sendMessage.setText(sendMessage.getText() + " *" + rollResult + "*");
 		sendMessage.setParseMode("Markdown");
 		answerUser();
+	}
+
+	private void hitosRoll(String command) {
+		// 3d10
+		numberOfDice = 3;
+		numberOfSides = 10;
+		rollResult = 0;
+
+		ArrayList<Integer> dice = new ArrayList<Integer>();
+		for (int i = 0; i < numberOfDice; i++) {
+			int valor = (int) (Math.random() * numberOfSides + 1);
+			dice.add(valor);
+			rollResult += valor;
+		}
+		Collections.sort(dice);
+		if ((dice.get(0) == 1) && (dice.get(1) == 1)) {
+			if (dice.get(2) == 1) {
+				sendMessage.setText(
+						"*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2) + "] -> * Pífia Triple*");
+			} else {
+				sendMessage.setText(
+						"*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2) + "] -> * Pífia Doble*");
+			}
+		} else if ((dice.get(0) == 10) && (dice.get(1) == 10)) {
+			if (dice.get(2) == 10) {
+				sendMessage.setText(
+						"*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2) + "] -> * Éxito Triple*");
+			} else {
+				sendMessage.setText(
+						"*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2) + "] -> * Éxito Doble*");
+			}
+		} else {
+			sendMessage.setText("*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2) + "] = *"
+					+ dice.get(1) + "*");
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
+	private void hitosRollWithModifier(String command) {
+		// 3d10+7 3d10-62
+		String[] numericParts = command.split("\\D+");
+		numberOfDice = 3;
+		numberOfSides = 10;
+		rollResult = 0;
+		rollModifier = Integer.parseInt(numericParts[1]);
+		ArrayList<Integer> dice = new ArrayList<Integer>();
+		for (int i = 0; i < numberOfDice; i++) {
+			int valor = (int) (Math.random() * numberOfSides + 1);
+			dice.add(valor);
+			rollResult += valor;
+		}
+		Collections.sort(dice);
+		if ((dice.get(0) == 1) && (dice.get(1) == 1)) {
+			if (dice.get(2) == 1) {
+				sendMessage.setText("*[Hitos + " + rollModifier + "]*-> [" + dice.get(0) + "," + dice.get(1) + ","
+						+ dice.get(2) + "] -> * Pífia Triple*");
+			} else {
+				sendMessage.setText("*[Hitos + " + rollModifier + "]*-> [" + dice.get(0) + "," + dice.get(1) + ","
+						+ dice.get(2) + "] -> * Pífia Doble*");
+			}
+		} else if ((dice.get(1) == 10) && (dice.get(2) == 10)) {
+			if (dice.get(0) == 10) {
+				sendMessage.setText("*[Hitos + " + rollModifier + "]*-> [" + dice.get(0) + "," + dice.get(1) + ","
+						+ dice.get(2) + "] -> * Éxito Triple*");
+			} else {
+				sendMessage.setText("*[Hitos + " + rollModifier + "]*-> [" + dice.get(0) + "," + dice.get(1) + ","
+						+ dice.get(2) + "] -> * Éxito Doble*");
+			}
+		} else {
+			sendMessage.setText("*[Hitos + " + rollModifier + "]*-> [" + dice.get(0) + "," + dice.get(1) + ","
+					+ dice.get(2) + "] = *" + (dice.get(1) + rollModifier) + "*");
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+
 	}
 }
