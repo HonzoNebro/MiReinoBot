@@ -439,25 +439,15 @@ public class Bot extends TelegramLongPollingBot {
 
 	private void severalDiceWithModifier(String command) {
 		// 3d6+10 2d8-7
-		String[] numericParts = command.split("\\d");
+		String[] numericParts = command.split("\\D+");
 		numberOfDice = Integer.parseInt(numericParts[0]);
-		String[] numericParts2 = null;
-		char modifier = 0;
-		if (numericParts[1].contains("+")) {
-			numericParts2 = numericParts[1].split("\\+");
-			modifier = '+';
-		} else if (numericParts[1].contains("-")) {
-			numericParts2 = numericParts[1].split("\\-");
-			modifier = '-';
-		} /*
-			 * else if (numericParts[1].contains("*")) { numericParts2 =
-			 * numericParts[1].split("\\*"); modifier = '*'; } else { numericParts2 =
-			 * numericParts[1].split("\\/"); modifier = '/'; }
-			 */
-		numberOfSides = Integer.parseInt(numericParts2[0]);
-		rollModifier = Integer.parseInt(numericParts2[1]);
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		rollModifier = Integer.parseInt(numericParts[2]);
 		rollResult = 0;
-
+		char modifier = '+';
+		if (command.contains("-")) {
+			modifier = '-';
+		}
 		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
 			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
 		} else if (numberOfSides <= 1) {
@@ -492,11 +482,7 @@ public class Bot extends TelegramLongPollingBot {
 		char modifier = '+';
 		if (command.contains("-")) {
 			modifier = '-';
-		} /*
-			 * else if (numericParts[1].contains("*")) { numericParts2 =
-			 * numericParts[1].split("\\*"); modifier = '*'; } else { numericParts2 =
-			 * numericParts[1].split("\\/"); modifier = '/'; }
-			 */
+		}
 		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
 			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
 		} else if (numberOfSides <= 1) {
@@ -893,13 +879,13 @@ public class Bot extends TelegramLongPollingBot {
 			if (success > ones) {
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
 						+ "] = *" + (success - ones) + " éxito/s*");
-			} else if(success < ones){
+			} else if (success < ones) {
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Pífia*");
-			}else{
+			} else {
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
-			} 
+			}
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
@@ -909,21 +895,17 @@ public class Bot extends TelegramLongPollingBot {
 		// v6d3
 		String[] numericParts = command.split("\\D+");
 		numberOfDice = Integer.parseInt(numericParts[1]);
-		int difficulty = 6;
-		if (difficulty == Integer.parseInt(numericParts[2]))
-			;
-		{
+		int difficulty = Integer.parseInt(numericParts[2]);
+		if (difficulty <2 || difficulty >10) {
 			difficulty = Integer.parseInt(numericParts[2]);
 		}
-		System.out.println("entrada: " + command);
-		System.out.println("numericParts: " + numericParts[2]);
-		System.out.println("dados: " + numberOfDice + " dificultad: " + difficulty);
 		numberOfSides = 10;
 		int success = 0;
 		int ones = 0;
-
 		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
 			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
+		}else if (difficulty <2 || difficulty >10) {
+			sendMessage.setText("La dificultad ha de ser mínimo de 2 y máximo de 10");
 		} else {
 			ArrayList<Integer> dice = new ArrayList<Integer>();
 			for (int i = 0; i < numberOfDice; i++) {
@@ -936,18 +918,18 @@ public class Bot extends TelegramLongPollingBot {
 					success++;
 				}
 			}
-			Collections.sort(dice);			
+			Collections.sort(dice);
 			if (success > ones) {
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
 						+ "] = *" + (success - ones) + " éxito/s*");
-			} else if(success < ones){
+			} else if (success < ones) {
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Pífia*");
-			}else{
+			} else {
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
-			} 
-			
+			}
+
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
