@@ -893,13 +893,13 @@ public class Bot extends TelegramLongPollingBot {
 			if (success > ones) {
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
 						+ "] = *" + (success - ones) + " éxito/s*");
-			} else if (success == ones) {
-				sendMessage.setText(
-						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
-			} else {
+			} else if(success < ones){
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Pífia*");
-			}
+			}else{
+				sendMessage.setText(
+						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
+			} 
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
@@ -936,17 +936,18 @@ public class Bot extends TelegramLongPollingBot {
 					success++;
 				}
 			}
-			Collections.sort(dice);
+			Collections.sort(dice);			
 			if (success > ones) {
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
 						+ "] = *" + (success - ones) + " éxito/s*");
-			} else if (success == ones) {
-				sendMessage.setText(
-						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
-			} else {
+			} else if(success < ones){
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Pífia*");
-			}
+			}else{
+				sendMessage.setText(
+						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
+			} 
+			
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
