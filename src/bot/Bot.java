@@ -88,9 +88,9 @@ public class Bot extends TelegramLongPollingBot {
 
 	private void findCommand(String command) {
 		// Comandos admitidos
-		if (command.matches("(ayuda|help|start)")) {
+		if (command.matches("(ayuda|help|start|test)")) {
 			sendMessage.setText("Con este bot puedes lanzar una serie de dados ¡Y cada vez más!\n"
-					+ "Simples [/d6]\nVarios dados [/3d6]\nCon modificador [/3d10+5 /2d12-7]\nDados explosivos [/1d20!+3]\nManteniendo dados [/3d20!h1 /6d10kh2 /4d8l1]\nSavage Worlds [/s-2 /s4 /s6 /s8 /s10 /s12]\nIn Nomine Satanis [/ins]\nVampiro [/vampiro6 /vamp7d8 /v10d4]\nFate/Fudge [/f /fate+5 /fudge-7]\nHitos [/h /h+7 /hitos /hitos+5]\nEste bot es de código abierto -> https://github.com/HonzoNebro/MiReinoBot");
+					+ "Simples [/d6]\nVarios dados [/3d6]\nCon modificador [/3d10+5 /2d12-7]\nDados explosivos [/1d20!+3]\nManteniendo dados [/3d20!h1 /6d10kh2 /4d8l1]\nSavage Worlds [/s-2 /s4 /s6 /s8 /s10 /s12]\nIn Nomine Satanis [/ins]\nVampiro [/vampiro6 /vamp7d8 /v10d4]\nFate/Fudge [/f /fate+5 /fudge-7]\nHitos [/h /h+7 /hitos /hitos+5]\nPbtA [/pbta /pbta+1 /p-2 /p+1]\nEste bot es de código abierto -> https://github.com/HonzoNebro/MiReinoBot");
 			sendMessage.setParseMode("Markdown");
 			answerUser();
 		}
@@ -239,9 +239,20 @@ public class Bot extends TelegramLongPollingBot {
 		else if (command.matches("(v|vampiro|vamp)\\d+")) {
 			vampireRoll(command);
 		}
-		// Tirada de Vampirocon dificultad personalizada
+		// Tirada de Vampiro con dificultad personalizada
 		else if (command.matches("(v|vampiro|vamp)\\d+([d]\\d+)?")) {
 			vampireRollWithCustomDificulty(command);
+		}
+
+		// Tirada de Powered by the Apocalypse
+		else if (command.matches("(pbta|p)")) {
+			// pbta p
+			PoweredByTheApocapilse(command);
+		}
+		// Tirada de Powered by the Apocalypse
+		else if (command.matches("(pbta|p)[+-]\\d+")) {
+			// pbta+1 p-3
+			PoweredByTheApocapilseWithModifier(command);
 		}
 
 		// Otros comandos
@@ -1075,35 +1086,82 @@ public class Bot extends TelegramLongPollingBot {
 	}
 
 	private void PoweredByTheApocapilse(String command) {
-		// 3d6+10 2d8-7
+		// pbta p
 		String[] numericParts = command.split("\\D+");
-		numberOfDice = Integer.parseInt(numericParts[0]);
-		numberOfSides = Integer.parseInt(numericParts[1]);
-		rollModifier = Integer.parseInt(numericParts[2]);
+		numberOfDice = 2;
+		numberOfSides = 6;
+		rollResult = 0;
+		ArrayList<Integer> dice = new ArrayList<Integer>();
+		for (int i = 0; i < numberOfDice; i++) {
+			int valor = (int) (Math.random() * numberOfSides + 1);
+			dice.add(valor);
+			rollResult += valor;
+		}
+		Collections.sort(dice);
+		String result = "";
+		if (rollResult < 6) {
+			result = "FALLO";
+		} else if (rollResult < 10) {
+			result = "ÉXITO PARCIAL";
+		} else {
+			result = "ÉXITO";
+		}
+
+		sendMessage.setText("*[PbtA]* *[" + numberOfDice + "d" + numberOfSides + "]*-> [" + dice + "] = *" + rollResult
+				+ "->" + result + "*");
+
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
+	private void PoweredByTheApocapilseWithModifier(String command) {
+		// pbta+1 p-1
+		String[] numericParts = command.split("\\D+");
+		numberOfDice = 2;
+		numberOfSides = 6;
+		rollModifier = Integer.parseInt(numericParts[1]);
 		rollResult = 0;
 		char modifier = '+';
 		if (command.contains("-")) {
 			modifier = '-';
 		}
-		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
-			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
-		} else if (numberOfSides <= 1) {
-			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
+		ArrayList<Integer> dice = new ArrayList<Integer>();
+		for (int i = 0; i < numberOfDice; i++) {
+			int valor = (int) (Math.random() * numberOfSides + 1);
+			dice.add(valor);
+			rollResult += valor;
+		}
+		/*
+		 * ah, es que si el resultado es <6 es fallo entre 7-9 es exito parcial >=10 es
+		 * exito
+		 */
+		Collections.sort(dice);
+		String result = "";
+		if (modifier == '+') {
+			if (rollResult + rollModifier < 6) {
+				result = "FALLO";
+			} else if (rollResult + rollModifier < 10) {
+				result = "ÉXITO PARCIAL";
+			} else {
+				result = "ÉXITO";
+			}
 		} else {
-			ArrayList<Integer> dice = new ArrayList<Integer>();
-			for (int i = 0; i < numberOfDice; i++) {
-				int valor = (int) (Math.random() * numberOfSides + 1);
-				dice.add(valor);
-				rollResult += valor;
+			if (rollResult - rollModifier < 6) {
+				result = "FALLO";
+			} else if (rollResult - rollModifier < 10) {
+				result = "ÉXITO PARCIAL";
+			} else {
+				result = "ÉXITO";
 			}
-			Collections.sort(dice);
-			if (modifier == '+') {
-				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]*-> ["
-						+ dice + "] + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
-			} else if (modifier == '-') {
-				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]*-> ["
-						+ dice + "] - " + rollModifier + " = *" + (rollResult - rollModifier) + "*");
-			}
+		}
+		if (modifier == '+') {
+			sendMessage.setText(
+					"*[PbtA]* *[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]*-> [" + dice
+							+ "] + " + rollModifier + " = *" + (rollResult + rollModifier) + "->" + result + "*");
+		} else if (modifier == '-') {
+			sendMessage.setText(
+					"*[PbtA]* *[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]*-> [" + dice
+							+ "] - " + rollModifier + " = *" + (rollResult - rollModifier) + "->" + result + "*");
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
