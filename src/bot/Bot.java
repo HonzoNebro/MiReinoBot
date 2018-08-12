@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.telegram.telegrambots.api.methods.send.SendDocument;
-import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.api.methods.send.SendVideo;
-import org.telegram.telegrambots.api.objects.PhotoSize;
-import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import com.vdurmont.emoji.EmojiParser;
 
 public class Bot extends TelegramLongPollingBot {
 
@@ -40,7 +42,7 @@ public class Bot extends TelegramLongPollingBot {
 
 		// Imprimir por consola el mensaje recibido
 		if (arg0.getMessage().hasText()) {
-			System.out.println("\nMENSAJE RECIBIDO DE " + arg0.getMessage().getFrom().getFirstName() + ": "
+			System.out.println("\nMENSAJE RECIBIDO DE @" + arg0.getMessage().getFrom().getUserName() + ": "
 					+ arg0.getMessage().getText().toLowerCase());
 
 			// Si el mensaje es un comando, se intenta averiguar cual
@@ -68,7 +70,8 @@ public class Bot extends TelegramLongPollingBot {
 		// Respuesta del bot centralizada, todas las respuestas se mandan desde aquí
 		// también se escribe un mensaje por consola
 		try {
-			System.out.println("RESPUESTA: " + sendMessage.getText());
+			System.out.println("RESPUESTA: 🎲" + sendMessage.getText());
+			sendMessage.setText(EmojiParser.parseToUnicode("🎲" + sendMessage.getText()));
 			sendMessage.setParseMode("Markdown");
 			execute(sendMessage);
 		} catch (TelegramApiException e) {
@@ -84,16 +87,10 @@ public class Bot extends TelegramLongPollingBot {
 	}
 
 	private void findCommand(String command) {
-		// Comando de pruebas
-		if (command.equalsIgnoreCase("test")) {
-			sendMessage.setText("Esto es un test");
-			answerUser();
-		}
-
 		// Comandos admitidos
-		else if (command.matches("(ayuda|help|start)")) {
+		if (command.matches("(ayuda|help|start)")) {
 			sendMessage.setText("Con este bot puedes lanzar una serie de dados ¡Y cada vez más!\n"
-					+ "Simples [/d6]\nVarios dados [/3d6]\nCon modificador [/3d10+5 /2d12-7]\nDados explosivos [/1d20!+3]\nManteniendo dados [/3d20!h1 /6d10kh2 /4d8l1 /6d3!-8kl2]\nSavage Worlds [/s-2 /s4 /s6 /s8 /s10 /s12]\nIn Nomine Satanis [/ins]\nVampiro [/vampiro6 /vamp7d8 /v10d4]\nFate/Fudge [/f /fate+5 /fudge-7]\nHitos [/h /h+7 /hitos /hitos+5]");
+					+ "Simples [/d6]\nVarios dados [/3d6]\nCon modificador [/3d10+5 /2d12-7]\nDados explosivos [/1d20!+3]\nManteniendo dados [/3d20!h1 /6d10kh2 /4d8l1]\nSavage Worlds [/s-2 /s4 /s6 /s8 /s10 /s12]\nIn Nomine Satanis [/ins]\nVampiro [/vampiro6 /vamp7d8 /v10d4]\nFate/Fudge [/f /fate+5 /fudge-7]\nHitos [/h /h+7 /hitos /hitos+5]\nEste bot es de código abierto -> https://github.com/HonzoNebro/MiReinoBot");
 			sendMessage.setParseMode("Markdown");
 			answerUser();
 		}
@@ -824,7 +821,7 @@ public class Bot extends TelegramLongPollingBot {
 			sendMessage.setText("*[In Nomine Satanis]* = *" + roll + "*");
 			sendVideo.setVideo("https://media.giphy.com/media/l2QE7PACf4cJccwA8/giphy.gif");
 			try {
-				sendVideo(sendVideo);
+				execute(sendVideo);
 			} catch (TelegramApiException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -833,7 +830,7 @@ public class Bot extends TelegramLongPollingBot {
 			sendMessage.setText("*[In Nomine Satanis]* = *" + roll + "*");
 			sendVideo.setVideo("https://media.giphy.com/media/hB5vNhUepvcek/giphy.mp4");
 			try {
-				sendVideo(sendVideo);
+				execute(sendVideo);
 			} catch (TelegramApiException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -845,7 +842,7 @@ public class Bot extends TelegramLongPollingBot {
 		answerUser();
 		sendPhoto.setPhoto("https://i.imgur.com/PWsDzmW.jpg");
 		try {
-			sendPhoto(sendPhoto);
+			execute(sendVideo);
 		} catch (TelegramApiException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -896,7 +893,7 @@ public class Bot extends TelegramLongPollingBot {
 		String[] numericParts = command.split("\\D+");
 		numberOfDice = Integer.parseInt(numericParts[1]);
 		int difficulty = Integer.parseInt(numericParts[2]);
-		if (difficulty <2 || difficulty >10) {
+		if (difficulty < 2 || difficulty > 10) {
 			difficulty = Integer.parseInt(numericParts[2]);
 		}
 		numberOfSides = 10;
@@ -904,7 +901,7 @@ public class Bot extends TelegramLongPollingBot {
 		int ones = 0;
 		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
 			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
-		}else if (difficulty <2 || difficulty >10) {
+		} else if (difficulty < 2 || difficulty > 10) {
 			sendMessage.setText("La dificultad ha de ser mínimo de 2 y máximo de 10");
 		} else {
 			ArrayList<Integer> dice = new ArrayList<Integer>();
@@ -1075,5 +1072,40 @@ public class Bot extends TelegramLongPollingBot {
 		sendMessage.setParseMode("Markdown");
 		answerUser();
 
+	}
+
+	private void PoweredByTheApocapilse(String command) {
+		// 3d6+10 2d8-7
+		String[] numericParts = command.split("\\D+");
+		numberOfDice = Integer.parseInt(numericParts[0]);
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		rollModifier = Integer.parseInt(numericParts[2]);
+		rollResult = 0;
+		char modifier = '+';
+		if (command.contains("-")) {
+			modifier = '-';
+		}
+		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
+			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
+		} else if (numberOfSides <= 1) {
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			for (int i = 0; i < numberOfDice; i++) {
+				int valor = (int) (Math.random() * numberOfSides + 1);
+				dice.add(valor);
+				rollResult += valor;
+			}
+			Collections.sort(dice);
+			if (modifier == '+') {
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]*-> ["
+						+ dice + "] + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
+			} else if (modifier == '-') {
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]*-> ["
+						+ dice + "] - " + rollModifier + " = *" + (rollResult - rollModifier) + "*");
+			}
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
 	}
 }
