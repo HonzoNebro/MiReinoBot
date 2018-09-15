@@ -89,7 +89,7 @@ public class Bot extends TelegramLongPollingBot {
 	private void findCommand(String command) {
 		// Comandos admitidos
 		if (command.matches("(ayuda|help|start|test)")) {
-			sendMessage.setText("Con este bot puedes lanzar una serie de dados ¡Y cada vez más!\n"
+			sendMessage.setText("Con este bot puedes lanzar estos dados para jugar a rol ¡Más próximamente!\n"
 					+ "Simples [/d6]\nVarios dados [/3d6]\nCon modificador [/3d10+5 /2d12-7]\nDados explosivos [/1d20!+3]\nManteniendo dados [/3d20!h1 /6d10kh2 /4d8l1]\nSavage Worlds [/s-2 /s4 /s6 /s8 /s10 /s12]\nIn Nomine Satanis [/ins]\nVampiro [/vampiro6 /vamp7d8 /v10d4]\nFate/Fudge [/f /fate+5 /fudge-7]\nHitos [/h /h+7 /hitos /hitos+5]\nPbtA [/pbta /pbta+1 /p-2 /p+1]\nEste bot es de código abierto -> https://github.com/HonzoNebro/MiReinoBot");
 			sendMessage.setParseMode("Markdown");
 			answerUser();
@@ -206,7 +206,7 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Tirada de Fate
-		else if (command.matches("(f|fate|fudge)")) {
+		else if (command.matches("(f|fate|fudge|f@mireinoporunmasterbot|fate@mireinoporunmasterbot|fudge@mireinoporunmasterbot)")) {
 			// es una tirada de Fate
 			fateRoll(command);
 		} else if (command.matches("(f|fate|fudge)[+-]\\d+")) {
@@ -215,7 +215,7 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Tirada de Hitos
-		else if (command.matches("(h|hitos)")) {
+		else if (command.matches("(h|hitos|h@mireinoporunmasterbot|hitos@mireinoporunmasterbot)")) {
 			hitosRoll(command);
 			// esta es una tirada Hitos con modificador
 		} else if (command.matches("(h|hitos)[+]\\d+")) {
@@ -224,13 +224,17 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Tirada de Savage Worlds
-		else if (command.matches("(s|savage)(-2|4|6|8|10|12)")) {
+		else if (command.matches("(s|savage)(4|6|8|10|12)")) {
 			// roll {1d6+1d8}kh1
 			savageWorldRoll(command);
 		}
+		else if (command.matches("(s|savage)(-2)")) {
+			// roll {1d6-2, 1d4-2}kh1
+			negativeSavageWorldRoll(command);
+		}
 
 		// Tirada de In Nomine Santis
-		else if (command.matches("(ins)")) {
+		else if (command.matches("(ins|ins@mireinoporunmasterbot)")) {
 			// roll 3d6 sin ordenar
 			inNomineSatanisRoll(command);
 		}
@@ -245,7 +249,7 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Tirada de Powered by the Apocalypse
-		else if (command.matches("(pbta|p)")) {
+		else if (command.matches("(pbta|p|p@mireinoporunmasterbot|pbta@mireinoporunmasterbot)")) {
 			// pbta p
 			PoweredByTheApocapilse(command);
 		}
@@ -778,7 +782,7 @@ public class Bot extends TelegramLongPollingBot {
 
 	private void savageWorldRoll(String command) {
 		// "(s|savage)(4|6|8|10|12)"
-		// roll {1d6+1d8}kh1
+		// roll {1d6, 1d8}kh1
 		String[] numericParts = command.split("\\D+");
 		numberOfSides = Integer.parseInt(numericParts[1]);
 		rollResult = 0;
@@ -818,6 +822,42 @@ public class Bot extends TelegramLongPollingBot {
 		answerUser();
 	}
 
+	private void negativeSavageWorldRoll(String command) {
+		// "(s|savage)(-2)"
+		// roll {1d6-2, 1d8-2}kh1
+		numberOfSides = 4;
+		rollResult = 0;
+
+		ArrayList<Integer> wildDice = new ArrayList<Integer>();
+		int wild = 0, wildResult = 0;
+		do {
+			wild = (int) (Math.random() * 6 + 1);
+			wildDice.add(wild);
+			wildResult += wild;
+			System.out.println("wild" + wild);
+		} while (wild == 6);
+
+		ArrayList<Integer> dice = new ArrayList<Integer>();
+		int value = 0;
+		do {
+			value = (int) (Math.random() * numberOfSides + 1);
+			dice.add(value);
+			rollResult += value;
+			System.out.println("roll" + value);
+		} while (value == numberOfSides);
+		int finalResult = (wildResult > rollResult) ? wildResult : rollResult;
+		int increases = 1;
+		while ((finalResult - increases * 4) - 4 >= 0) {
+			increases++;
+		}
+		sendMessage.setText("*Savage Worlds [6] [4] -2*\nSalvaje: [" + wildDice + "] -2 = " + (wildResult - 2)
+				+ "\nHabilidad: [" + dice + "] -2 = " + (rollResult - 2) + "\n*Total: " + (finalResult - 2) + " -> "
+				+ (increases - 1) + " aumento/s*");
+
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
 	private void inNomineSatanisRoll(String command) {
 		// 3d6
 		rollResult = 0;
@@ -829,7 +869,7 @@ public class Bot extends TelegramLongPollingBot {
 			roll += valor;
 		}
 		if (roll == "111") {
-			sendMessage.setText("*[In Nomine Satanis]* = *" + roll + "*");
+			sendMessage.setText("*[In Nomine Satanis]* = *👼" + roll + "👼*");
 			sendVideo.setVideo("https://media.giphy.com/media/l2QE7PACf4cJccwA8/giphy.gif");
 			try {
 				execute(sendVideo);
@@ -838,7 +878,7 @@ public class Bot extends TelegramLongPollingBot {
 				e.printStackTrace();
 			}
 		} else if (roll == "666") {
-			sendMessage.setText("*[In Nomine Satanis]* = *" + roll + "*");
+			sendMessage.setText("*[In Nomine Satanis]* = *😈" + roll + "😈*");
 			sendVideo.setVideo("https://media.giphy.com/media/hB5vNhUepvcek/giphy.mp4");
 			try {
 				execute(sendVideo);
@@ -853,7 +893,7 @@ public class Bot extends TelegramLongPollingBot {
 		answerUser();
 		sendPhoto.setPhoto("https://i.imgur.com/PWsDzmW.jpg");
 		try {
-			execute(sendVideo);
+			execute(sendPhoto);
 		} catch (TelegramApiException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -889,7 +929,7 @@ public class Bot extends TelegramLongPollingBot {
 						+ "] = *" + (success - ones) + " éxito/s*");
 			} else if (success < ones) {
 				sendMessage.setText(
-						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Pífia*");
+						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *💀Pífia💀*");
 			} else {
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
@@ -932,7 +972,7 @@ public class Bot extends TelegramLongPollingBot {
 						+ "] = *" + (success - ones) + " éxito/s*");
 			} else if (success < ones) {
 				sendMessage.setText(
-						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Pífia*");
+						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *💀Pífia💀*");
 			} else {
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
@@ -1025,10 +1065,10 @@ public class Bot extends TelegramLongPollingBot {
 		if ((dice.get(0) == 1) && (dice.get(1) == 1)) {
 			if (dice.get(2) == 1) {
 				sendMessage.setText(
-						"*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2) + "] -> * Pífia Triple*");
+						"*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2) + "] -> * 💀Pífia Triple💀*");
 			} else {
 				sendMessage.setText(
-						"*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2) + "] -> * Pífia Doble*");
+						"*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2) + "] -> * 💀Pífia Doble💀*");
 			}
 		} else if ((dice.get(0) == 10) && (dice.get(1) == 10)) {
 			if (dice.get(2) == 10) {
@@ -1063,10 +1103,10 @@ public class Bot extends TelegramLongPollingBot {
 		if ((dice.get(0) == 1) && (dice.get(1) == 1)) {
 			if (dice.get(2) == 1) {
 				sendMessage.setText("*[Hitos + " + rollModifier + "]*-> [" + dice.get(0) + "," + dice.get(1) + ","
-						+ dice.get(2) + "] -> * Pífia Triple*");
+						+ dice.get(2) + "] -> * 💀Pífia Triple💀*");
 			} else {
 				sendMessage.setText("*[Hitos + " + rollModifier + "]*-> [" + dice.get(0) + "," + dice.get(1) + ","
-						+ dice.get(2) + "] -> * Pífia Doble*");
+						+ dice.get(2) + "] -> * 💀Pífia Doble💀*");
 			}
 		} else if ((dice.get(1) == 10) && (dice.get(2) == 10)) {
 			if (dice.get(0) == 10) {
@@ -1087,7 +1127,6 @@ public class Bot extends TelegramLongPollingBot {
 
 	private void PoweredByTheApocapilse(String command) {
 		// pbta p
-		String[] numericParts = command.split("\\D+");
 		numberOfDice = 2;
 		numberOfSides = 6;
 		rollResult = 0;
@@ -1099,8 +1138,8 @@ public class Bot extends TelegramLongPollingBot {
 		}
 		Collections.sort(dice);
 		String result = "";
-		if (rollResult < 6) {
-			result = "FALLO";
+		if (rollResult < 7) {
+			result = "💀FALLO💀";
 		} else if (rollResult < 10) {
 			result = "ÉXITO PARCIAL";
 		} else {
@@ -1131,23 +1170,20 @@ public class Bot extends TelegramLongPollingBot {
 			dice.add(valor);
 			rollResult += valor;
 		}
-		/*
-		 * ah, es que si el resultado es <6 es fallo entre 7-9 es exito parcial >=10 es
-		 * exito
-		 */
+
 		Collections.sort(dice);
 		String result = "";
 		if (modifier == '+') {
-			if (rollResult + rollModifier < 6) {
-				result = "FALLO";
+			if (rollResult + rollModifier < 7) {
+				result = "💀FALLO💀";
 			} else if (rollResult + rollModifier < 10) {
 				result = "ÉXITO PARCIAL";
 			} else {
 				result = "ÉXITO";
 			}
 		} else {
-			if (rollResult - rollModifier < 6) {
-				result = "FALLO";
+			if (rollResult - rollModifier < 7) {
+				result = "💀FALLO💀";
 			} else if (rollResult - rollModifier < 10) {
 				result = "ÉXITO PARCIAL";
 			} else {
