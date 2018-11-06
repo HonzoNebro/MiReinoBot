@@ -205,8 +205,18 @@ public class Bot extends TelegramLongPollingBot {
 			// y aplicamos el modificador
 		}
 
+		// Target 1d20>10 3d6>5
+		else if (command.matches("\\d+[d]\\d+[>]\\d+")) {
+			rollOver(command);
+		} else if (command.matches("\\d+[d]\\d+[<]\\d+")) {
+			rollUnder(command);
+		}
+
+		// Target 1d20<10 3d6<5
+
 		// Tirada de Fate
-		else if (command.matches("(f|fate|fudge|f@mireinoporunmasterbot|fate@mireinoporunmasterbot|fudge@mireinoporunmasterbot)")) {
+		else if (command.matches(
+				"(f|fate|fudge|f@mireinoporunmasterbot|fate@mireinoporunmasterbot|fudge@mireinoporunmasterbot)")) {
 			// es una tirada de Fate
 			fateRoll(command);
 		} else if (command.matches("(f|fate|fudge)[+-]\\d+")) {
@@ -227,8 +237,7 @@ public class Bot extends TelegramLongPollingBot {
 		else if (command.matches("(s|savage)(4|6|8|10|12)")) {
 			// roll {1d6+1d8}kh1
 			savageWorldRoll(command);
-		}
-		else if (command.matches("(s|savage)(-2)")) {
+		} else if (command.matches("(s|savage)(-2)")) {
 			// roll {1d6-2, 1d4-2}kh1
 			negativeSavageWorldRoll(command);
 		}
@@ -257,6 +266,13 @@ public class Bot extends TelegramLongPollingBot {
 		else if (command.matches("(pbta|p)[+-]\\d+")) {
 			// pbta+1 p-3
 			PoweredByTheApocapilseWithModifier(command);
+		}
+
+		// Tiradas de Cronicas de Ériandos
+		else if (command.matches("(e\\+)|(e\\>)")) {
+			eriandosOver97(command);
+		} else if (command.matches("(e\\-)|(e\\<)")) {
+			eriandosUnder3(command);
 		}
 
 		// Otros comandos
@@ -780,6 +796,64 @@ public class Bot extends TelegramLongPollingBot {
 		answerUser();
 	}
 
+	private void rollOver(String command) {
+		// 1d20>10 3d6>5
+		String[] numericParts = command.split("\\D+");
+		numberOfDice = Integer.parseInt(numericParts[0]);
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		rollResult = 0;
+		int target = Integer.parseInt(numericParts[2]);
+
+		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
+			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
+		} else if (numberOfSides <= 1) {
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			int valor = 0;
+			for (int i = 0; i < numberOfDice; i++) {
+				do {
+					valor = (int) (Math.random() * numberOfSides + 1);
+					dice.add(valor);
+					rollResult += valor;
+				} while (valor > target);
+			}
+			sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + target + "]*-> [" + dice + "] = *"
+					+ rollResult + "*");
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
+	private void rollUnder(String command) {
+		// 1d20<10 3d6<5
+		String[] numericParts = command.split("\\D+");
+		numberOfDice = Integer.parseInt(numericParts[0]);
+		numberOfSides = Integer.parseInt(numericParts[1]);
+		rollResult = 0;
+		int target = Integer.parseInt(numericParts[2]);
+
+		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
+			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
+		} else if (numberOfSides <= 1) {
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			int valor = 0;
+			for (int i = 0; i < numberOfDice; i++) {
+				do {
+					valor = (int) (Math.random() * numberOfSides + 1);
+					dice.add(valor);
+					rollResult += valor;
+				} while (valor < target);
+			}
+			sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "<" + target + "]*-> [" + dice + "] = *"
+					+ rollResult + "*");
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
 	private void savageWorldRoll(String command) {
 		// "(s|savage)(4|6|8|10|12)"
 		// roll {1d6, 1d8}kh1
@@ -928,8 +1002,8 @@ public class Bot extends TelegramLongPollingBot {
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
 						+ "] = *" + (success - ones) + " éxito/s*");
 			} else if (success < ones) {
-				sendMessage.setText(
-						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *💀Pífia💀*");
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
+						+ "] = *💀Pífia💀*");
 			} else {
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
@@ -971,8 +1045,8 @@ public class Bot extends TelegramLongPollingBot {
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
 						+ "] = *" + (success - ones) + " éxito/s*");
 			} else if (success < ones) {
-				sendMessage.setText(
-						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *💀Pífia💀*");
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
+						+ "] = *💀Pífia💀*");
 			} else {
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
@@ -1064,11 +1138,11 @@ public class Bot extends TelegramLongPollingBot {
 		Collections.sort(dice);
 		if ((dice.get(0) == 1) && (dice.get(1) == 1)) {
 			if (dice.get(2) == 1) {
-				sendMessage.setText(
-						"*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2) + "] -> * 💀Pífia Triple💀*");
+				sendMessage.setText("*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2)
+						+ "] -> * 💀Pífia Triple💀*");
 			} else {
-				sendMessage.setText(
-						"*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2) + "] -> * 💀Pífia Doble💀*");
+				sendMessage.setText("*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2)
+						+ "] -> * 💀Pífia Doble💀*");
 			}
 		} else if ((dice.get(0) == 10) && (dice.get(1) == 10)) {
 			if (dice.get(2) == 10) {
@@ -1198,6 +1272,65 @@ public class Bot extends TelegramLongPollingBot {
 			sendMessage.setText(
 					"*[PbtA]* *[" + numberOfDice + "d" + numberOfSides + "" + modifier + rollModifier + "]*-> [" + dice
 							+ "] - " + rollModifier + " = *" + (rollResult - rollModifier) + "->" + result + "*");
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
+	private void eriandosOver97(String command) {
+		// 1d20>10 3d6>5
+		numberOfDice = 1;
+		numberOfSides = 100;
+		rollResult = 0;
+		int target = 97;
+
+		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
+			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
+		} else if (numberOfSides <= 1) {
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			int valor = 0;
+			valor = (int) (Math.random() * numberOfSides + 1);
+			dice.add(valor);
+			rollResult += valor;
+			if (valor >= target) {
+				valor = (int) (Math.random() * numberOfSides + 1);
+				dice.add(valor);
+				rollResult += valor;
+			}
+			sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + target + "]*-> [" + dice + "] = *"
+					+ rollResult + "*");
+		}
+		sendMessage.setParseMode("Markdown");
+		answerUser();
+	}
+
+	private void eriandosUnder3(String command) {
+		// 1d20<10 3d6<5
+		numberOfDice = 1;
+		numberOfSides = 100;
+		rollResult = 0;
+		int target = 3;
+
+		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
+			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
+		} else if (numberOfSides <= 1) {
+			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
+		} else {
+			ArrayList<Integer> dice = new ArrayList<Integer>();
+			int valor = 0;
+			valor = (int) (Math.random() * numberOfSides + 1);
+			dice.add(valor);
+			rollResult -= valor;
+			if (valor <= target) {
+				valor = (int) (Math.random() * numberOfSides + 1);
+				dice.add(valor);
+				rollResult -= valor;
+			}
+			rollResult += dice.get(0) * 2;
+			sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "<" + target + "]*-> [" + dice + "] = *"
+					+ rollResult + "*");
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
