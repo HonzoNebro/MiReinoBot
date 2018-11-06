@@ -215,8 +215,7 @@ public class Bot extends TelegramLongPollingBot {
 		// Target 1d20<10 3d6<5
 
 		// Tirada de Fate
-		else if (command.matches(
-				"(f|fate|fudge|f@mireinoporunmasterbot|fate@mireinoporunmasterbot|fudge@mireinoporunmasterbot)")) {
+		else if (command.matches("(f|fate|fudge|f@mireinoporunmasterbot|fate@mireinoporunmasterbot|fudge@mireinoporunmasterbot)")) {
 			// es una tirada de Fate
 			fateRoll(command);
 		} else if (command.matches("(f|fate|fudge)[+-]\\d+")) {
@@ -238,6 +237,10 @@ public class Bot extends TelegramLongPollingBot {
 			// roll {1d6+1d8}kh1
 			savageWorldRoll(command);
 		} else if (command.matches("(s|savage)(-2)")) {
+			// roll {1d6-2, 1d4-2}kh1
+			negativeSavageWorldRoll(command);
+		}
+		else if (command.matches("(s|savage)(-2)")) {
 			// roll {1d6-2, 1d4-2}kh1
 			negativeSavageWorldRoll(command);
 		}
@@ -1004,6 +1007,8 @@ public class Bot extends TelegramLongPollingBot {
 			} else if (success < ones) {
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
 						+ "] = *💀Pífia💀*");
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
+						+ "] = *💀Pífia💀*");
 			} else {
 				sendMessage.setText(
 						"*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice + "] = *Fallo*");
@@ -1045,6 +1050,8 @@ public class Bot extends TelegramLongPollingBot {
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
 						+ "] = *" + (success - ones) + " éxito/s*");
 			} else if (success < ones) {
+				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
+						+ "] = *💀Pífia💀*");
 				sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + difficulty + "]*-> [" + dice
 						+ "] = *💀Pífia💀*");
 			} else {
@@ -1140,7 +1147,11 @@ public class Bot extends TelegramLongPollingBot {
 			if (dice.get(2) == 1) {
 				sendMessage.setText("*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2)
 						+ "] -> * 💀Pífia Triple💀*");
+				sendMessage.setText("*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2)
+						+ "] -> * 💀Pífia Triple💀*");
 			} else {
+				sendMessage.setText("*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2)
+						+ "] -> * 💀Pífia Doble💀*");
 				sendMessage.setText("*[Hitos]*-> [" + dice.get(0) + "," + dice.get(1) + "," + dice.get(2)
 						+ "] -> * 💀Pífia Doble💀*");
 			}
