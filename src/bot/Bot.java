@@ -1298,8 +1298,8 @@ public class Bot extends TelegramLongPollingBot {
 			rollModifier = 0;
 		}
 		rollResult = 0;
-		int critico = 60;
-		int pifia = 40;
+		int critico = 97;
+		int pifia = 3;
 		int nulo = 27;
 		char modifier = '+';
 		if (command.contains("-")) {
@@ -1344,9 +1344,9 @@ public class Bot extends TelegramLongPollingBot {
 			else if (modifier == '+') {
 				if(dice.size() > 1) {
 					if (repitePifia == true) {
-						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " + " + rollModifier + "]*-> [" + dice.get(0) + " -" + dice.get(1) + " modifier " + rollModifier + "] = *" + (rollResult + rollModifier) + "*");
+						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " + " + rollModifier + "]*-> [" + dice.get(0) + " -" + dice.get(1) + " + " + rollModifier + "] = *" + (rollResult + rollModifier) + "*");
 					} else {
-						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " + " + rollModifier + "]*-> [" + dice.get(0) + " + " + dice.get(1) + " modifier " + rollModifier + "] = *" + (rollResult + rollModifier) + "*");
+						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " + " + rollModifier + "]*-> [" + dice.get(0) + " + " + dice.get(1) + " + " + rollModifier + "] = *" + (rollResult + rollModifier) + "*");
 					}
 				} else {
 					sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " + " + rollModifier + "]*-> " + dice + " + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
@@ -1354,9 +1354,9 @@ public class Bot extends TelegramLongPollingBot {
 			} else if (modifier == '-') {
 				if(dice.size() > 1) {
 					if (repitePifia == true) {
-						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " - " + rollModifier + "]*-> [" + dice.get(0) + " -" + dice.get(1) + " modifier " + rollModifier + "] = *" + (rollResult - rollModifier) + "*");
+						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " - " + rollModifier + "]*-> [" + dice.get(0) + " -" + dice.get(1) + " - " + rollModifier + "] = *" + (rollResult - rollModifier) + "*");
 					} else {
-						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " - " + rollModifier + "]*-> [" + dice.get(0) + " + " + dice.get(1) + " modifier " + rollModifier + "] = *" + (rollResult - rollModifier) + "*");
+						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " - " + rollModifier + "]*-> [" + dice.get(0) + " + " + dice.get(1) + " - " + rollModifier + "] = *" + (rollResult - rollModifier) + "*");
 					}
 				} else {
 					sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " - " + rollModifier + "]*-> " + dice + " - " + rollModifier + " = *" + (rollResult - rollModifier) + "*");
