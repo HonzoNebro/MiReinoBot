@@ -215,7 +215,8 @@ public class Bot extends TelegramLongPollingBot {
 		// Target 1d20<10 3d6<5
 
 		// Tirada de Fate
-		else if (command.matches("(f|fate|fudge|f@mireinoporunmasterbot|fate@mireinoporunmasterbot|fudge@mireinoporunmasterbot)")) {
+		else if (command.matches(
+				"(f|fate|fudge|f@mireinoporunmasterbot|fate@mireinoporunmasterbot|fudge@mireinoporunmasterbot)")) {
 			// es una tirada de Fate
 			fateRoll(command);
 		} else if (command.matches("(f|fate|fudge)[+-]\\d+")) {
@@ -239,8 +240,7 @@ public class Bot extends TelegramLongPollingBot {
 		} else if (command.matches("(s|savage)(-2)")) {
 			// roll {1d6-2, 1d4-2}kh1
 			negativeSavageWorldRoll(command);
-		}
-		else if (command.matches("(s|savage)(-2)")) {
+		} else if (command.matches("(s|savage)(-2)")) {
 			// roll {1d6-2, 1d4-2}kh1
 			negativeSavageWorldRoll(command);
 		}
@@ -272,10 +272,10 @@ public class Bot extends TelegramLongPollingBot {
 		}
 
 		// Tiradas de Cronicas de Ériandos
-		else if (command.matches("(e\\+)|(e\\>)")) {
-			eriandosOver97(command);
-		} else if (command.matches("(e\\-)|(e\\<)")) {
-			eriandosUnder3(command);
+		else if (command.matches("(e|eriandos)")) {
+			Eriandos(command);
+		} else if (command.matches("(e|eriandos)[+-]\\d+")) {
+			Eriandos(command);
 		}
 
 		// Otros comandos
@@ -1288,12 +1288,24 @@ public class Bot extends TelegramLongPollingBot {
 		answerUser();
 	}
 
-	private void eriandosOver97(String command) {
-		// 1d20>10 3d6>5
+	private void Eriandos(String command) {
+		String[] numericParts = command.split("\\D+");
 		numberOfDice = 1;
 		numberOfSides = 100;
+		if (numericParts.length > 1) {
+			rollModifier = Integer.parseInt(numericParts[1]);
+		} else {
+			rollModifier = 0;
+		}
 		rollResult = 0;
-		int target = 97;
+		int critico = 60;
+		int pifia = 40;
+		int nulo = 27;
+		char modifier = '+';
+		if (command.contains("-")) {
+			modifier = '-';
+		}
+		boolean repitePifia = false;
 
 		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
 			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
@@ -1305,43 +1317,51 @@ public class Bot extends TelegramLongPollingBot {
 			valor = (int) (Math.random() * numberOfSides + 1);
 			dice.add(valor);
 			rollResult += valor;
-			if (valor >= target) {
+			if (valor == nulo) {
+
+			} else if (valor >= critico) {
 				valor = (int) (Math.random() * numberOfSides + 1);
 				dice.add(valor);
 				rollResult += valor;
-			}
-			sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + ">" + target + "]*-> [" + dice + "] = *"
-					+ rollResult + "*");
-		}
-		sendMessage.setParseMode("Markdown");
-		answerUser();
-	}
-
-	private void eriandosUnder3(String command) {
-		// 1d20<10 3d6<5
-		numberOfDice = 1;
-		numberOfSides = 100;
-		rollResult = 0;
-		int target = 3;
-
-		if ((numberOfDice <= 0) || (numberOfDice > 50)) {
-			sendMessage.setText("No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50");
-		} else if (numberOfSides <= 1) {
-			sendMessage.setText("¿Qué dado conoces con menos de dos caras?");
-		} else {
-			ArrayList<Integer> dice = new ArrayList<Integer>();
-			int valor = 0;
-			valor = (int) (Math.random() * numberOfSides + 1);
-			dice.add(valor);
-			rollResult -= valor;
-			if (valor <= target) {
+			} else if (valor <= pifia) {
 				valor = (int) (Math.random() * numberOfSides + 1);
 				dice.add(valor);
 				rollResult -= valor;
+				repitePifia = true;
 			}
-			rollResult += dice.get(0) * 2;
-			sendMessage.setText("*[" + numberOfDice + "d" + numberOfSides + "<" + target + "]*-> [" + dice + "] = *"
-					+ rollResult + "*");
+			if(rollModifier == 0) {
+				if(dice.size() > 1) {
+					if (repitePifia == true) {
+						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + "]*-> [" + dice.get(0) + " -" + dice.get(1) + "] = *" + (rollResult) + "*");
+					} else {
+						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + "]*-> [" + dice.get(0) + " + " + dice.get(1) + "] = *" + (rollResult) + "*");
+					}
+				} else {
+					sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + "]*-> [" + dice + "] = *" + (rollResult) + "*");
+				}
+
+			}
+			else if (modifier == '+') {
+				if(dice.size() > 1) {
+					if (repitePifia == true) {
+						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " + " + rollModifier + "]*-> [" + dice.get(0) + " -" + dice.get(1) + " modifier " + rollModifier + "] = *" + (rollResult + rollModifier) + "*");
+					} else {
+						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " + " + rollModifier + "]*-> [" + dice.get(0) + " + " + dice.get(1) + " modifier " + rollModifier + "] = *" + (rollResult + rollModifier) + "*");
+					}
+				} else {
+					sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " + " + rollModifier + "]*-> " + dice + " + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
+				}
+			} else if (modifier == '-') {
+				if(dice.size() > 1) {
+					if (repitePifia == true) {
+						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " - " + rollModifier + "]*-> [" + dice.get(0) + " -" + dice.get(1) + " modifier " + rollModifier + "] = *" + (rollResult - rollModifier) + "*");
+					} else {
+						sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " - " + rollModifier + "]*-> [" + dice.get(0) + " + " + dice.get(1) + " modifier " + rollModifier + "] = *" + (rollResult - rollModifier) + "*");
+					}
+				} else {
+					sendMessage.setText("*[Eriandos]* *[" + numberOfDice + "d" + numberOfSides + " - " + rollModifier + "]*-> " + dice + " - " + rollModifier + " = *" + (rollResult - rollModifier) + "*");
+				}
+			}
 		}
 		sendMessage.setParseMode("Markdown");
 		answerUser();
