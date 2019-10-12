@@ -1,12 +1,18 @@
 package bot;
 
+import com.vdurmont.emoji.EmojiParser;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import com.vdurmont.emoji.EmojiParser;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,16 +22,6 @@ import java.util.logging.Logger;
 
 public class Bot extends TelegramLongPollingBot {
 
-    Logger logger = Logger.getLogger(Bot.class.getName());
-
-    private int numberOfDice = 0;
-    private int numberOfSides = 0;
-    private int rollModifier = 0;
-    private int diceToKeep = 0;
-    private int rollResult = 0;
-    private SendMessage sendMessage;
-    private SendVideo sendVideo;
-    private SendPhoto sendPhoto;
     private static final String MARKDOWN = "Markdown";
     private static final String ERROR_CARAS = "¿Qué dado conoces con menos de dos caras?";
     private static final String ERROR_DEMASIADOS_DADOS = "No puedo tirar esa cantidad de dados. Lanza al menos un dado y un máximo de 50";
@@ -47,6 +43,15 @@ public class Bot extends TelegramLongPollingBot {
     private static final String RESULTADO_MENOS_DOS = "] -2 = ";
     private static final String HABILIDAD = "\nHabilidad: [";
     private static final String ERROR_COMANDO_NO_RECONOCIDO = "Comando no reconocido. Escribe /ayuda para más información";
+    private Logger logger = Logger.getLogger(Bot.class.getName());
+    private int numberOfDice = 0;
+    private int numberOfSides = 0;
+    private int rollModifier = 0;
+    private int diceToKeep = 0;
+    private int rollResult = 0;
+    private SendMessage sendMessage;
+    private SendVideo sendVideo;
+    private SendPhoto sendPhoto;
 
     @Override
     public String getBotUsername() {
@@ -77,21 +82,6 @@ public class Bot extends TelegramLongPollingBot {
             sendMessage.setText("Hola " + arg0.getMessage().getFrom().getFirstName()
                     + " , Por ahora solo respondo a la tirada de dados, escribe /ayuda para más información");
         }
-        /*
-        // Imprimir por consola el mensaje recibido
-        if (arg0.getMessage().hasText()) {
-            System.out.println("\nMENSAJE RECIBIDO DE @" + arg0.getMessage().getFrom().getUserName() + ": "
-                    + arg0.getMessage().getText().toLowerCase());
-        }
-        if (arg0.getMessage().hasDocument()) {
-            System.out.println("Document: " + arg0.getMessage().getDocument());
-        }
-        if (arg0.getMessage().hasPhoto()) {
-            List<PhotoSize> fotos = arg0.getMessage().getPhoto();
-            for (PhotoSize foto : fotos) {
-                System.out.println("Datos foto: " + foto);
-            }
-        }*/
 
     }
 
@@ -293,9 +283,9 @@ public class Bot extends TelegramLongPollingBot {
 
         // Tiradas de Cronicas de Ériandos
         else if (command.matches("(e|eriandos)")) {
-            Eriandos(command);
+            tiradaEriandos(command);
         } else if (command.matches("(e|eriandos)[+-]\\d+")) {
-            Eriandos(command);
+            tiradaEriandos(command);
         }
 
         // Otros comandos
@@ -1302,7 +1292,7 @@ public class Bot extends TelegramLongPollingBot {
         answerUser();
     }
 
-    private void Eriandos(String command) {
+    private void tiradaEriandos(String command) {
         String[] numericParts = command.split("\\D+");
         numberOfDice = 1;
         numberOfSides = 100;
@@ -1342,7 +1332,7 @@ public class Bot extends TelegramLongPollingBot {
             }
             if (rollModifier == 0) {
                 if (dice.size() > 1) {
-                    if (repitePifia == true) {
+                    if (repitePifia) {
                         sendMessage.setText(JUEGO_ERIANDOS + numberOfDice + "d" + numberOfSides + FLECHA_DERECHA + dice.get(0) + " -" + dice.get(1) + IGUAL + (rollResult) + "*");
                     } else {
                         sendMessage.setText(JUEGO_ERIANDOS + numberOfDice + "d" + numberOfSides + FLECHA_DERECHA + dice.get(0) + " + " + dice.get(1) + IGUAL + (rollResult) + "*");
@@ -1353,7 +1343,7 @@ public class Bot extends TelegramLongPollingBot {
 
             } else if (modifier == '+') {
                 if (dice.size() > 1) {
-                    if (repitePifia == true) {
+                    if (repitePifia) {
                         sendMessage.setText(JUEGO_ERIANDOS + numberOfDice + "d" + numberOfSides + " + " + rollModifier + FLECHA_DERECHA + dice.get(0) + " -" + dice.get(1) + " + " + rollModifier + IGUAL + (rollResult + rollModifier) + "*");
                     } else {
                         sendMessage.setText(JUEGO_ERIANDOS + numberOfDice + "d" + numberOfSides + " + " + rollModifier + FLECHA_DERECHA + dice.get(0) + " + " + dice.get(1) + " + " + rollModifier + IGUAL + (rollResult + rollModifier) + "*");
@@ -1361,9 +1351,9 @@ public class Bot extends TelegramLongPollingBot {
                 } else {
                     sendMessage.setText(JUEGO_ERIANDOS + numberOfDice + "d" + numberOfSides + " + " + rollModifier + "]*-> " + dice + " + " + rollModifier + " = *" + (rollResult + rollModifier) + "*");
                 }
-            } else if (modifier == '-') {
+            } else {
                 if (dice.size() > 1) {
-                    if (repitePifia == true) {
+                    if (repitePifia) {
                         sendMessage.setText(JUEGO_ERIANDOS + numberOfDice + "d" + numberOfSides + " - " + rollModifier + FLECHA_DERECHA + dice.get(0) + " -" + dice.get(1) + " - " + rollModifier + IGUAL + (rollResult - rollModifier) + "*");
                     } else {
                         sendMessage.setText(JUEGO_ERIANDOS + numberOfDice + "d" + numberOfSides + " - " + rollModifier + FLECHA_DERECHA + dice.get(0) + " + " + dice.get(1) + " - " + rollModifier + IGUAL + (rollResult - rollModifier) + "*");
