@@ -1,0 +1,157 @@
+
+9squid:S1643±"Use a StringBuilder instead.(¡½îÏûÿÿÿÿ
+zsquid:S1192	"]Define a constant instead of duplicating this literal "] -> * ğŸ’€PÃ­fia DobleğŸ’€*" 3 times.(à–åÆúÿÿÿÿ
+esquid:S1192ù"HDefine a constant instead of duplicating this literal "] -2 = " 4 times.(Ó”¼Ñùÿÿÿÿ
+dsquid:S1192µ"GDefine a constant instead of duplicating this literal "]*-> _" 4 times.(ü¥‰Äıÿÿÿÿ
+dsquid:S1192û"LDefine a constant instead of duplicating this literal " aumento/s*" 3 times.(§µëİ
+ksquid:S1192û"NDefine a constant instead of duplicating this literal "*[Hitos]*-> [" 7 times.(òçÈ¾úÿÿÿÿ
+isquid:S1192Ñ	"LDefine a constant instead of duplicating this literal "*[PbtA]* *[" 3 times.(­ÍŠ¯úÿÿÿÿ
+csquid:S1192¥	"KDefine a constant instead of duplicating this literal "*[Hitos + " 5 times.(šİ‡
+lsquid:S1192ú"ODefine a constant instead of duplicating this literal "\nHabilidad: [" 3 times.(”ÌÖœüÿÿÿÿ
+hsquid:S1192ú"KDefine a constant instead of duplicating this literal "\n*Total: " 3 times.(”ÌÖœüÿÿÿÿ
+msquid:S1192ğ"UDefine a constant instead of duplicating this literal "] = *ğŸ’€PÃ­fiağŸ’€*" 4 times.(¿‡§¦
+fsquid:S1192Ê	"NDefine a constant instead of duplicating this literal "ğŸ’€FALLOğŸ’€" 3 times.(±Ãˆ­
+¯squid:S1192§"‘Define a constant instead of duplicating this literal "No puedo tirar esa cantidad de dados. Lanza al menos un dado y un mÃ¡ximo de 50" 13 times.(×º¤åÿÿÿÿÿ
+dsquid:S1192Î	"GDefine a constant instead of duplicating this literal "Ã‰XITO" 3 times.(ô¼ä¶ùÿÿÿÿ
+fsquid:S1192J"JDefine a constant instead of duplicating this literal "Markdown" 28 times.(ÿÖÕùûÿÿÿÿ
+|squid:S1192¶"dDefine a constant instead of duplicating this literal "No puedes quedarte con ningÃºn dado" 4 times.(€ÚÒ¿
+…squid:S1192½"mDefine a constant instead of duplicating this literal "Â¿QuÃ© dado conoces con menos de dos caras?" 12 times.(ãŒÀ 
+esquid:S1192Ä"HDefine a constant instead of duplicating this literal "]*-> [" 36 times.(Ûáø®úÿÿÿÿ
+^squid:S1192ó"FDefine a constant instead of duplicating this literal "]*->[" 4 times.(Ãƒ›
+dsquid:S1192Æ"GDefine a constant instead of duplicating this literal "]*-> *" 4 times.(…ÃÖøÿÿÿÿ
+dsquid:S1192Ä"GDefine a constant instead of duplicating this literal "] = *" 20 times.(Ûáø®úÿÿÿÿ
+{squid:S1192ü"^Define a constant instead of duplicating this literal "] -> * ğŸ’€PÃ­fia TripleğŸ’€*" 3 times.(†’‹­şÿÿÿÿ
+gsquid:S1192Ì	"ODefine a constant instead of duplicating this literal "Ã‰XITO PARCIAL" 3 times.(È§Êò
+xsquid:S1192´"`Define a constant instead of duplicating this literal "La tirada no es de tantos dados" 4 times.(ñÔ¹ò
+hsquid:S1192¶
+"PDefine a constant instead of duplicating this literal "*[Eriandos]* *[" 9 times.(ÿöõà
+squid:S1862ò"„This branch can not be reached because the condition duplicates a previous condition in the same sequence of "if/else if" statements(Û¢Æò
+Qsquid:S4973³"9Use the "equals" method if value comparison was intended.(ú»
+Qsquid:S4973¼"9Use the "equals" method if value comparison was intended.(óíªÄ
+?squid:S1148M"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ
+@squid:S1148º"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ
+@squid:S1148Ã"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ
+@squid:S1148Ï"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ
+Bsquid:S1659"+Declare "numberOfSides" on a separate line.(µ±×
+Asquid:S1659"*Declare "rollModifier" on a separate line.(µ±×
+?squid:S1659"(Declare "diceToKeep" on a separate line.(µ±×
+?squid:S1659"(Declare "rollResult" on a separate line.(µ±×
+O
+squid:S106,"9Replace this use of System.out or System.err by a logger.(æ–ÊÄ
+O
+squid:S1069"9Replace this use of System.out or System.err by a logger.(¸˜–
+T
+squid:S106>"9Replace this use of System.out or System.err by a logger.(¨¼’¿úÿÿÿÿ
+T
+squid:S106H"9Replace this use of System.out or System.err by a logger.(º­Éıÿÿÿÿ
+nsquid:S3776X"RRefactor this method to reduce its Cognitive Complexity from 42 to the 15 allowed.(¯¼±¦ıÿÿÿÿ
+Osquid:S1135"2Complete the task associated to this TODO comment.(öË…æùÿÿÿÿ
+vsquid:S2293¿"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140À")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+vsquid:S2293Ò"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Asquid:S2140Õ")Use "java.util.Random.nextInt()" instead.(Ö¾Û
+vsquid:S2293í"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140î")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+vsquid:S2293‹"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Asquid:S2140")Use "java.util.Random.nextInt()" instead.(Ö¾Û
+vsquid:S2293«"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140­")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+vsquid:S2293Å"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Asquid:S2140É")Use "java.util.Random.nextInt()" instead.(Ö¾Û
+vsquid:S2293æ"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140è")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+vsquid:S2293‰"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Asquid:S2140")Use "java.util.Random.nextInt()" instead.(Ö¾Û
+isquid:S3776Ÿ"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(ÂÔÈ}
+vsquid:S2293¬"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140®")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+qsquid:S2293¼"YReplace the type specification in this constructor call with the diamond operator ("<>").(ñö¶¥
+jsquid:S3776Ó"RRefactor this method to reduce its Cognitive Complexity from 21 to the 15 allowed.(µÒæ¦
+vsquid:S2293à"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Asquid:S2140ä")Use "java.util.Random.nextInt()" instead.(Ö¾Û
+qsquid:S2293ğ"YReplace the type specification in this constructor call with the diamond operator ("<>").(ñö¶¥
+osquid:S3776ˆ"RRefactor this method to reduce its Cognitive Complexity from 32 to the 15 allowed.(¢Ü—óùÿÿÿÿ
+vsquid:S2293™"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140›")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+qsquid:S2293®"YReplace the type specification in this constructor call with the diamond operator ("<>").(ñö¶¥
+osquid:S3776Ó"RRefactor this method to reduce its Cognitive Complexity from 35 to the 15 allowed.(ëŠÁ¯úÿÿÿÿ
+vsquid:S2293ä"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Asquid:S2140è")Use "java.util.Random.nextInt()" instead.(Ö¾Û
+qsquid:S2293ü"YReplace the type specification in this constructor call with the diamond operator ("<>").(ñö¶¥
+vsquid:S2293®"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Asquid:S2140²")Use "java.util.Random.nextInt()" instead.(Ö¾Û
+vsquid:S2293Ë"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Asquid:S2140Ï")Use "java.util.Random.nextInt()" instead.(Ö¾Û
+Esquid:S1659ã"(Declare "wildResult" on a separate line.(ï¸‡Ûıÿÿÿÿ
+vsquid:S2293â"YReplace the type specification in this constructor call with the diamond operator ("<>").(¹…‰Àùÿÿÿÿ
+Fsquid:S2140å")Use "java.util.Random.nextInt()" instead.(üîÉüÿÿÿÿ
+P
+squid:S106è"9Replace this use of System.out or System.err by a logger.(–©‚Ô
+vsquid:S2293ë"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Asquid:S2140î")Use "java.util.Random.nextInt()" instead.(İ™Ô¨
+U
+squid:S106ñ"9Replace this use of System.out or System.err by a logger.(Şş¬Äÿÿÿÿÿ
+Ksquid:S1172…".Remove this unused method parameter "command".(¦§¥íşÿÿÿÿ
+Esquid:S1659Œ"(Declare "wildResult" on a separate line.(ï¸‡Ûıÿÿÿÿ
+vsquid:S2293‹"YReplace the type specification in this constructor call with the diamond operator ("<>").(¹…‰Àùÿÿÿÿ
+Fsquid:S2140")Use "java.util.Random.nextInt()" instead.(üîÉüÿÿÿÿ
+P
+squid:S106‘"9Replace this use of System.out or System.err by a logger.(–©‚Ô
+vsquid:S2293”"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Asquid:S2140—")Use "java.util.Random.nextInt()" instead.(İ™Ô¨
+U
+squid:S106š"9Replace this use of System.out or System.err by a logger.(Şş¬Äÿÿÿÿÿ
+Fsquid:S1172©".Remove this unused method parameter "command".(‰¡’î
+Fsquid:S2140°")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+Osquid:S1135¹"2Complete the task associated to this TODO comment.(ÕÌ®şÿÿÿÿ
+Osquid:S1135Â"2Complete the task associated to this TODO comment.(ÕÌ®şÿÿÿÿ
+Osquid:S1135Î"2Complete the task associated to this TODO comment.(ÕÌ®şÿÿÿÿ
+vsquid:S2293ß"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140á")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+isquid:S3776ü"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(éÔ­D
+vsquid:S2293Œ"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+Fsquid:S1172ª".Remove this unused method parameter "command".(êÛ‡¾
+vsquid:S2293®"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140°")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+vsquid:S2293Ï"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140Ñ")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+Fsquid:S1172ì".Remove this unused method parameter "command".(Ş¤İÅ
+vsquid:S2293ò"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140ô")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+vsquid:S2293œ	"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140	")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+fsquid:S00100¼	"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Õ†’o
+Esquid:S1172¼	".Remove this unused method parameter "command".(Õ†’o
+vsquid:S2293Á	"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140Ã	")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+lsquid:S00100Ø	"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ô©¨ÿÿÿÿÿ
+vsquid:S2293ã	"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Fsquid:S2140å	")Use "java.util.Random.nextInt()" instead.(®Ë¯Îúÿÿÿÿ
+osquid:S3776Š
+"RRefactor this method to reduce its Cognitive Complexity from 42 to the 15 allowed.(åå²Æşÿÿÿÿ
+lsquid:S00100Š
+"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(åå²Æşÿÿÿÿ
+vsquid:S2293¢
+"YReplace the type specification in this constructor call with the diamond operator ("<>").(ã­ûÿÿÿÿ
+Asquid:S2140¤
+")Use "java.util.Random.nextInt()" instead.(Ö¾Û
+Bsquid:S00108§
+")Either remove or fill this block of code.(ö©¸á
+Asquid:S2140ª
+")Use "java.util.Random.nextInt()" instead.(Ö¾Û
+Asquid:S2140®
+")Use "java.util.Random.nextInt()" instead.(Ö¾Û
+Esquid:S1125µ
+"(Remove the literal "true" boolean value.(ª§…½üÿÿÿÿ
+Esquid:S1125À
+"(Remove the literal "true" boolean value.(ª§…½üÿÿÿÿ
+Esquid:S1125Ê
+"(Remove the literal "true" boolean value.(ª§…½üÿÿÿÿ
+bsquid:CommentedOutCodeLine#"<This block of commented-out lines of code should be removed.(¸”ş¶
+gsquid:CommentedOutCodeLine("<This block of commented-out lines of code should be removed.(ÔˆÇ¸ùÿÿÿÿ
+hsquid:CommentedOutCodeLineÙ"<This block of commented-out lines of code should be removed.(ª’©…ûÿÿÿÿ
+hsquid:CommentedOutCodeLine’"<This block of commented-out lines of code should be removed.(ª’©…ûÿÿÿÿ
+hsquid:CommentedOutCodeLineÎ"<This block of commented-out lines of code should be removed.(ª’©…ûÿÿÿÿ
+hsquid:CommentedOutCodeLine’"<This block of commented-out lines of code should be removed.(ª’©…ûÿÿÿÿ
+bsquid:CommentedOutCodeLineç"<This block of commented-out lines of code should be removed.(Ñ¹ÑS
